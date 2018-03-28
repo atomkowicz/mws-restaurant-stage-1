@@ -1,0 +1,15 @@
+{
+  "name": "mws-restaurant-stage-1",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-responsive": "^2.9.0",
+    "gulp-load-plugins": "^1.5.0"
+  },
+  "dependencies": {
+  }
+}
