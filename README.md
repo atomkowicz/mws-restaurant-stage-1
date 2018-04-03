@@ -1,5 +1,7 @@
 # Restaurant reviews website
 ---
+Responsive application with service worker
+
 ### Development
 
 1. In this folder, start up a simple HTTP server to serve up the site files on your local computer. 

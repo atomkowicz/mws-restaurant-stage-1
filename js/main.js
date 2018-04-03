@@ -137,14 +137,26 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
  */
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
+  const picture = document.createElement('picture');
+
+  const sourceMobile = document.createElement('source');
+  sourceMobile.setAttribute('media', '(max-width: 799px)');
+  sourceMobile.setAttribute('srcset', DBHelper.imageUrlMobileForRestaurant(restaurant));
+  picture.appendChild(sourceMobile);
+
+  const sourceDesk = document.createElement('source');
+  sourceDesk.setAttribute('media', '(min-width: 800px)');
+  sourceDesk.setAttribute('srcset', DBHelper.imageUrlDeskForRestaurant(restaurant));
+  picture.appendChild(sourceDesk);
 
   const image = document.createElement('img');
   image.className = 'restaurant-img';
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   image.alt = `Restaurant ${restaurant.name}`;
-  li.append(image);
+  picture.append(image);
+  li.append(picture);
 
-  const name = document.createElement('h1');
+  const name = document.createElement('h2');
   name.innerHTML = restaurant.name;
   li.append(name);
 
@@ -159,6 +171,7 @@ createRestaurantHTML = (restaurant) => {
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
   more.href = DBHelper.urlForRestaurant(restaurant);
+  more.setAttribute("aria-label", "Restaurant details page");
   li.append(more)
 
   return li
@@ -175,5 +188,18 @@ addMarkersToMap = (restaurants = self.restaurants) => {
       window.location.href = marker.url
     });
     self.markers.push(marker);
+  });
+}
+
+/**
+ * Register Service Worker
+ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').then(function (registration) {
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }, function (err) {
+      console.log('ServiceWorker registration failed: ', err);
+    });
   });
 }

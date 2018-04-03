@@ -13,25 +13,28 @@
 <body>
   <header>
     <nav>
-      <h1><a href="/">Restaurant Reviews</a></h1>
+      <h1>
+        <a href="/">Restaurant Reviews</a>
+      </h1>
+      <a class="skip-to" href="#search">Skip to search</a>
     </nav>
   </header>
 
   <main id="maincontent">
     <section id="map-container">
-      <div id="map" role="application" tabindex="-1" title="Google Map"></div>
+      <div id="map" tabindex="-1" role="application" title="Google Map" name="map"></div>
     </section>
     <section>
-      <div class="filter-options">
+      <div id="search" class="filter-options">
         <h2>Filter Results</h2>
-        <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()">
+        <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()" aria-label="select neighborhood">
           <option value="all">All Neighborhoods</option>
         </select>
-        <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()">
+        <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()" aria-label="select cuisine type">
           <option value="all">All Cuisines</option>
         </select>
       </div>
-      <ul id="restaurants-list"></ul>
+      <ul id="restaurants-list" aria-live="polite" role="region" title="Restaurants list"></ul>
     </section>
   </main>
 
@@ -41,7 +44,10 @@
 
 
   <footer id="footer">
-    Copyright (c) 2018 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
+    Copyright (c) 2018
+    <a href="/">
+      <strong>Restaurant Reviews</strong>
+    </a> All Rights Reserved.
   </footer>
 
 </body>

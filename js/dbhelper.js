@@ -154,6 +154,22 @@ class DBHelper {
   }
 
   /**
+   * Restaurant image URL - icon for desktop
+   */
+  static imageUrlDeskForRestaurant(restaurant) {
+    let imgUrl = restaurant.photograph.replace('.jpg','-desk.jpg');
+    return (`/img/${imgUrl}`);
+  }
+
+  /**
+   * Restaurant image URL - icon for mobile
+   */
+  static imageUrlMobileForRestaurant(restaurant) {
+    let imgUrl = restaurant.photograph.replace('.jpg','-mobile.jpg');
+    return (`/img/${imgUrl}`);
+  }
+
+  /**
    * Map marker for a restaurant.
    */
   static mapMarkerForRestaurant(restaurant, map) {

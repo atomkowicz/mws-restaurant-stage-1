@@ -1,39 +1,25 @@
 const gulp = require('gulp'),
-    $ = require('gulp-load-plugins')();
+$ = require('gulp-load-plugins')();
 
 gulp.task('images', function() {
-    return gulp.src('images/*.{jpg,png}').pipe($.responsive({
+    return gulp.src('original_img/*.{jpg,png}').pipe($.responsive({
         '*.jpg': [{
-            width: 128,
+            width: 250,
             rename: {
-                suffix: '-128w'
+                suffix: '-mobile'
             },
         }, {
-            width: 400,
+            width: 270,
             rename: {
-                suffix: '-400w'
-            },
-        }, {
-            width: 500,
-            rename: {
-                suffix: '-500w'
-            },
-        }, {
-            // Compress, strip metadata, and rename original image
-            rename: {
-                suffix: '-better-original'
+                suffix: '-desk'
             },
         }]
     }, {
         // Global configuration for all images
-        // The output quality for JPEG, WebP and TIFF output formats
         quality: 70,
-        // Use progressive (interlace) scan for JPEG and PNG output
         progressive: true,
-        // Strip all metadata
         withMetadata: false,
-    })).pipe(gulp.dest('img/dist'));
+    })).pipe(gulp.dest('img/'));
 });
 
-//https://stackoverflow.com/a/28460016
 gulp.task('default', ['images']);

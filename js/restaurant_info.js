@@ -55,10 +55,23 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
 
-  const image = document.getElementById('restaurant-img');
-  image.className = 'restaurant-img'
+  const picture = document.getElementById('restaurant-picture');
+
+  const sourceMobile = document.createElement('source');
+  sourceMobile.setAttribute('media', '(max-width: 400px)');
+  sourceMobile.setAttribute('srcset', DBHelper.imageUrlMobileForRestaurant(restaurant));
+  picture.appendChild(sourceMobile);
+
+  const sourceDesk = document.createElement('source');
+  sourceDesk.setAttribute('media', '(min-width: 401px)');
+  sourceDesk.setAttribute('srcset', DBHelper.imageUrlForRestaurant(restaurant));
+  picture.appendChild(sourceDesk);
+
+  const image = document.createElement('img');
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   image.alt = `Restaurant ${restaurant.name}`;
+  image.className = 'restaurant-img';
+  picture.append(image);
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
@@ -76,10 +89,12 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
  */
 fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
   const hours = document.getElementById('restaurant-hours');
+
   for (let key in operatingHours) {
     const row = document.createElement('tr');
 
-    const day = document.createElement('td');
+    const day = document.createElement('th');
+    day.scope = "row";
     day.innerHTML = key;
     row.appendChild(day);
 
