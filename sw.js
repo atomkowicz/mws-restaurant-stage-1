@@ -4,6 +4,7 @@ const allCaches = [
   CACHE_NAME,
   IMG_CACHE_NAME
 ];
+
 var urlsToCache = [
   '/',
   '/index.html',
@@ -12,15 +13,22 @@ var urlsToCache = [
   '/js/main.js',
   '/js/restaurant_info.js',
   '/js/dbhelper.js',
+  '/img/no-image.png',
   '/data/restaurants.json',
   'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700',
 ];
 
-self.addEventListener('install', function(event) {
-  console.log('V2 installing…');
+// Images are not put into cache instantly. 
+// During first visit on the website
+// sw checks if they can be get from the sw cache 'resto-reviews-content-imgs'
+// If they are not available they are fetched from the network.
+// after fetch sw saves images in cache, see servePhoto function
+
+self.addEventListener('install', function (event) {
+  console.log('Service worker installing…');
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(function(cache) {
+      .then(function (cache) {
         console.log('Opened cache');
         return cache.addAll(urlsToCache);
       })
@@ -28,7 +36,7 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('activate', function (event) {
-  console.log('V2 now ready to handle fetches!');
+  console.log('Service worker ready');
   // this part is for future version of service worker
   // delete any caches that starts with 'restaurants' phrase
   // will get rid of 'restaurants-cache-vx'
@@ -58,6 +66,7 @@ self.addEventListener('fetch', function (event) {
       event.respondWith(caches.match('/css/styles.css'));
       return;
     }
+    // Special handling for photos
     if (requestUrl.pathname.startsWith('/img/')) {
       event.respondWith(servePhoto(event.request));
       return;
@@ -79,11 +88,12 @@ self.addEventListener('fetch', function (event) {
   );
 });
 
+
 function servePhoto(request) {
   // Return images from the "restaurants-content-imgs" cache
-  // if they're in there. But afterwards, go to the network
-  // to update the entry in the cache.
-  var storageUrl = request.url.replace(/-\d+px\.jpg$/, '');
+  // if they're in there. But afterwards, update the entry 
+  // in the cache from the network.
+  var storageUrl = request.url;
 
   return caches.open(IMG_CACHE_NAME).then(function (cache) {
     return cache.match(storageUrl).then(function (response) {
@@ -98,7 +108,7 @@ function servePhoto(request) {
 }
 
 self.addEventListener('message', function (event) {
-  console.log('V2 skip waiting for install');
+  console.log('Skip waiting for install');
 
   if (event.data.action === 'skipWaiting') {
     self.skipWaiting();

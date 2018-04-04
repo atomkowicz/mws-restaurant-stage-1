@@ -13,6 +13,8 @@ gulp.task('images', function() {
             rename: {
                 suffix: '-desk'
             },
+        }, {
+            width: 800
         }]
     }, {
         // Global configuration for all images

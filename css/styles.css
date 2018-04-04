@@ -37,7 +37,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 }
 #maincontent {
   background-color: #f3f3f3;
-  min-height: 100%;
+  min-height: 100vh;
 }
 #footer {
   background-color: #444;
@@ -197,8 +197,7 @@ a.skip-to, .hidden {
   background-color: #ccc;
   display: block;
   margin: 0;
-  max-width: 100%;
-  min-width: 100%;
+  width: 100%;
 }
 #restaurants-list li h2 {
   color: navy;
