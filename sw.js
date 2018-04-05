@@ -57,9 +57,16 @@ self.addEventListener('activate', function (event) {
 self.addEventListener('fetch', function (event) {
   var requestUrl = new URL(event.request.url);
 
+
   if (requestUrl.origin === location.origin) {
+    console.log(requestUrl.pathname)
+
     if (requestUrl.pathname === '/') {
       event.respondWith(caches.match('/index.html'));
+      return;
+    }
+    if (requestUrl.pathname.startsWith('/restaurant.html')) {
+      event.respondWith(caches.match('/restaurant.html'));
       return;
     }
     if (requestUrl.pathname === '/css/styles.css') {
@@ -67,6 +74,9 @@ self.addEventListener('fetch', function (event) {
       return;
     }
     // Special handling for photos
+    // Return images from the "restaurants-content-imgs" cache
+    // if they're in there. But afterwards, update the entry 
+    // in the cache from the network.
     if (requestUrl.pathname.startsWith('/img/')) {
       event.respondWith(servePhoto(event.request));
       return;
@@ -79,13 +89,12 @@ self.addEventListener('fetch', function (event) {
       event.respondWith(caches.match('/data/restaurants.json'));
       return;
     }
+    event.respondWith(
+      caches.match(event.request).then(function (response) {
+        return response || fetch(event.request);
+      }).catch(err => console.log(err, event.request))
+    );
   }
-
-  event.respondWith(
-    caches.match(event.request).then(function (response) {
-      return response || fetch(event.request);
-    })
-  );
 });
 
 
@@ -97,7 +106,9 @@ function servePhoto(request) {
 
   return caches.open(IMG_CACHE_NAME).then(function (cache) {
     return cache.match(storageUrl).then(function (response) {
-      if (response) return response;
+      if (response) {
+        return response;
+      }
 
       return fetch(request).then(function (networkResponse) {
         cache.put(storageUrl, networkResponse.clone());

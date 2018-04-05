@@ -68,7 +68,9 @@ nav h1 a {
   font-weight: 200;
   letter-spacing: 10px;
   text-transform: uppercase;
+  text-align: center;
 }
+
 #breadcrumb {
     padding-left: 40px;
     height: 60px;
@@ -79,7 +81,6 @@ nav h1 a {
     width: calc(50% - 40px);
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
 }
 
 @media screen and (max-width: 768px) {
