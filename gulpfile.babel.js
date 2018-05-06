@@ -9,6 +9,12 @@ import swPrecache from 'sw-precache';
 import gulpLoadPlugins from 'gulp-load-plugins';
 import { output as pagespeed } from 'psi';
 import pkg from './package.json';
+import imageminPngquant from 'imagemin-pngquant';
+import imageminGiflossy from 'imagemin-giflossy';
+import imageminMozjpeg from 'imagemin-mozjpeg';
+import imageminZopfli from 'imagemin-zopfli';
+import imageminSvgo from 'imagemin-svgo';
+import imageminJpegtran from 'imagemin-jpegtran';
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
@@ -27,41 +33,41 @@ gulp.task('images', () =>
         .pipe($.cache($.imagemin({
             progressive: true,
             interlaced: true,
-            // use: [
-            //     //png
-            //     imageminPngquant({
-            //         speed: 1,
-            //         quality: 98 //lossy settings
-            //     }),
-            //     imageminZopfli({
-            //         more: true
-            //     }),
-            //     //gif
-            //     // imagemin.gifsicle({
-            //     //     interlaced: true,
-            //     //     optimizationLevel: 3
-            //     // }),
-            //     //gif very light lossy, use only one of gifsicle or Giflossy
-            //     imageminGiflossy({
-            //         optimizationLevel: 3,
-            //         optimize: 3, //keep-empty: Preserve empty transparent frames
-            //         lossy: 2
-            //     }),
-            //     //svg
-            //     imagemin.svgo({
-            //         plugins: [{
-            //             removeViewBox: false
-            //         }]
-            //     }),
-            //     //jpg lossless
-            //     imagemin.jpegtran({
-            //         progressive: true
-            //     }),
-            //     //jpg very light lossy, use vs jpegtran
-            //     imageminMozjpeg({
-            //         quality: 90
-            //     })
-            // ]
+            use: [
+                //png
+                imageminPngquant({
+                    speed: 1,
+                    quality: 98 //lossy settings
+                }),
+                imageminZopfli({
+                    more: true
+                }),
+                //gif
+                // imagemin.gifsicle({
+                //     interlaced: true,
+                //     optimizationLevel: 3
+                // }),
+                //gif very light lossy, use only one of gifsicle or Giflossy
+                imageminGiflossy({
+                    optimizationLevel: 3,
+                    optimize: 3, //keep-empty: Preserve empty transparent frames
+                    lossy: 2
+                }),
+                //svg
+                imageminSvgo({
+                    plugins: [{
+                        removeViewBox: false
+                    }]
+                }),
+                //jpg lossless
+                imageminJpegtran({
+                    progressive: true
+                }),
+                //jpg very light lossy, use vs jpegtran
+                imageminMozjpeg({
+                    quality: 90
+                })
+            ]
         })))
         .pipe(gulp.dest('dist/img'))
         .pipe($.size({ title: 'images' }))
