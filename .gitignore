@@ -1,2 +1,6 @@
 .history/*
+dist/
 node_modules
+.tmp
+yarn.lock
+yarn-error.log
