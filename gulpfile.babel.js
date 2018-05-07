@@ -19,14 +19,6 @@ import imageminJpegtran from 'imagemin-jpegtran';
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
 
-// Lint JavaScript
-gulp.task('lint', () =>
-    gulp.src(['app/js/**/*.js', '!node_modules/**'])
-        .pipe($.eslint())
-        .pipe($.eslint.format())
-        .pipe($.if(!browserSync.active, $.eslint.failAfterError()))
-);
-
 // Optimize images
 gulp.task('images', () =>
     gulp.src('app/img/**/*')
@@ -77,8 +69,9 @@ gulp.task('images', () =>
 gulp.task('copy', () =>
     gulp.src([
         'app/*',
+        'app/data/*',
         '!app/*.html',
-        'node_modules/apache-server-configs/dist/.htaccess'
+        '!app/original_img',
     ], {
             dot: true
         }).pipe(gulp.dest('dist'))
@@ -114,13 +107,7 @@ gulp.task('styles', () => {
 // Concatenate and minify JavaScript. Transpiles ES2015 code to ES5.
 // see `.babelrc` file.
 gulp.task('scripts', () =>
-    gulp.src([
-        // Note: Since we are not using useref in the scripts build pipeline,
-        //       you need to explicitly list your scripts here in the right order
-        //       to be correctly concatenated
-        './app/scripts/main.js'
-        // Other scripts
-    ])
+    gulp.src('./app/scripts/**/*.js')
         .pipe($.newer('.tmp/scripts'))
         .pipe($.sourcemaps.init())
         .pipe($.babel())
@@ -182,7 +169,7 @@ gulp.task('serve', ['scripts', 'styles'], () => {
 
     gulp.watch(['app/**/*.html'], reload);
     gulp.watch(['app/styles/**/*.{scss,css}'], ['styles', reload]);
-    gulp.watch(['app/scripts/**/*.js'], ['lint', 'scripts', reload]);
+    gulp.watch(['app/scripts/**/*.js'], ['scripts', reload]);
     gulp.watch(['app/images/**/*'], reload);
 });
 
@@ -207,7 +194,7 @@ gulp.task('serve:dist', ['default'], () =>
 gulp.task('default', ['clean'], cb =>
     runSequence(
         'styles',
-        ['lint', 'html', 'scripts', 'images', 'copy'],
+        ['html', 'scripts', 'images', 'copy'],
         'generate-service-worker',
         cb
     )
@@ -228,6 +215,29 @@ gulp.task('pagespeed', cb =>
 gulp.task('copy-sw-scripts', () => {
     return gulp.src(['node_modules/sw-toolbox/sw-toolbox.js', 'app/scripts/sw/runtime-caching.js'])
         .pipe(gulp.dest('dist/scripts/sw'));
+});
+
+gulp.task('generate-responsive-images', function () {
+    return src('app/original_img/*.{jpg,png}').pipe($.responsive({
+        '*.jpg': [{
+            width: 250,
+            rename: {
+                suffix: '-mobile'
+            },
+        }, {
+            width: 270,
+            rename: {
+                suffix: '-desk'
+            },
+        }, {
+            width: 800
+        }]
+    }, {
+            // Global configuration for all images
+            quality: 100,
+            progressive: true,
+            withMetadata: false,
+        })).pipe(dest('app/img/'));
 });
 
 // See http://www.html5rocks.com/en/tutorials/service-worker/introduction/ for
@@ -260,31 +270,3 @@ gulp.task('generate-service-worker', ['copy-sw-scripts'], () => {
         stripPrefix: rootDir + '/'
     });
 });
-
-// import { task, src, dest } from "gulp";
-// const $ = require('gulp-load-plugins')();
-
-// task('generate-responsive-images', function () {
-//     return src('app/original_img/*.{jpg,png}').pipe($.responsive({
-//         '*.jpg': [{
-//             width: 250,
-//             rename: {
-//                 suffix: '-mobile'
-//             },
-//         }, {
-//             width: 270,
-//             rename: {
-//                 suffix: '-desk'
-//             },
-//         }, {
-//             width: 800
-//         }]
-//     }, {
-//             // Global configuration for all images
-//             quality: 100,
-//             progressive: true,
-//             withMetadata: false,
-//         })).pipe(dest('app/img/'));
-// });
-
-// task('default', ['images']);
