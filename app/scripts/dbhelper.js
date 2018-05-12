@@ -1,4 +1,4 @@
-console.log('jupi')
+import idb from 'idb';
 
 /**
  * Common database helper functions.
@@ -38,7 +38,6 @@ class DBHelper {
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
-
     let xhr = new XMLHttpRequest();
     xhr.open('GET', DBHelper.DATABASE_URL);
     xhr.onload = () => {
@@ -209,3 +208,5 @@ class DBHelper {
   }
 
 }
+
+export default DBHelper;

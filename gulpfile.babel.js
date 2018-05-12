@@ -35,11 +35,6 @@ gulp.task('images', () =>
                 imageminZopfli({
                     more: true
                 }),
-                //gif
-                // imagemin.gifsicle({
-                //     interlaced: true,
-                //     optimizationLevel: 3
-                // }),
                 //gif very light lossy, use only one of gifsicle or Giflossy
                 imageminGiflossy({
                     optimizationLevel: 3,
@@ -105,55 +100,41 @@ gulp.task('styles', () => {
         .pipe(gulp.dest('.tmp/styles'));
 });
 
-// Concatenate and minify JavaScript. Transpiles ES2015 code to ES5.
-// see `.babelrc` file.
-// gulp.task('scripts', () =>
-//     gulp.src('./app/scripts/**/*.js')
-//         .pipe($.newer('.tmp/scripts'))
-//         .pipe($.sourcemaps.init())
-//         .pipe($.babel())
-//         .pipe($.sourcemaps.write())
-//         .pipe(gulp.dest('.tmp/scripts'))
-//         .pipe($.concat('main.min.js'))
-//         .pipe($.uglify({ preserveComments: 'some' }))
-//         // Output files
-//         .pipe($.size({ title: 'scripts' }))
-//         .pipe($.sourcemaps.write('.'))
-//         .pipe(gulp.dest('dist/scripts'))
-//         .pipe(gulp.dest('.tmp/scripts'))
-// );
-
 gulp.task('scripts', () =>
-    gulp.src('./app/scripts/main.js')
-    .pipe(webpack({
-      output: {
-        filename: '[name].js'
-      },
-      module: {
-        rules: [
-          {
-            test: /\.js$/,
-            exclude: /(node_modules|bower_components)/,
-            use: {
-              loader: 'babel-loader',
-              options: {
-                presets: ['env']
-              }
-            }
-          }
-        ]
-      },
-      devtool: '#inline-source-map'
-    }))
-    .pipe(gulp.dest('.tmp/scripts'))
-    .pipe($.sourcemaps.init({ loadMaps: true }))
-    .pipe($.uglify())
-    .pipe($.rename('main.min.js'))
-    // Output files
-    .pipe($.size({title: 'scripts'}))
-    .pipe($.sourcemaps.write('.'))
-    .pipe(gulp.dest('dist/scripts'))
-    .pipe(gulp.dest('.tmp/scripts'))
+    gulp.src(['./app/scripts/main.js', './app/scripts/restaurant_info.js'])
+        .pipe(webpack({
+            entry: {
+                'main': './app/scripts/main.js', // outputs /js/app/card/main.js
+                'restaurant_info': './app/scripts/restaurant_info.js', // outputs /js/app/card/cart.js
+            },
+            output: {
+                filename: '[name].js'
+            },
+            module: {
+                rules: [
+                    {
+                        test: /\.js$/,
+                        exclude: /(node_modules)/,
+                        use: {
+                            loader: 'babel-loader',
+                            options: {
+                                presets: ['env']
+                            }
+                        }
+                    }
+                ]
+            },
+            devtool: '#inline-source-map'
+        }))
+        .pipe(gulp.dest('.tmp/scripts'))
+        .pipe($.sourcemaps.init({ loadMaps: true }))
+        .pipe($.uglify())
+        // .pipe($.rename('main.min.js'))
+        // Output files
+        .pipe($.size({ title: 'scripts' }))
+        .pipe($.sourcemaps.write('.'))
+        .pipe(gulp.dest('dist/scripts'))
+        .pipe(gulp.dest('.tmp/scripts'))
 );
 
 // Scan your HTML for assets & optimize them

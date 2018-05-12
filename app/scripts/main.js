@@ -1,3 +1,6 @@
+
+import DBHelper from './dbhelper';
+
 var restaurants,
   neighborhoods,
   cuisines
@@ -109,9 +112,8 @@ const resetRestaurants = (restaurants) => {
   self.restaurants = [];
   const ul = document.getElementById('restaurants-list');
   ul.innerHTML = '';
-
   // Remove all map markers
-  self.markers.forEach(m => m.setMap(null));
+  if(self.markers) self.markers.forEach(m => m.setMap(null));
   self.markers = [];
   self.restaurants = restaurants;
 }
@@ -210,6 +212,3 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchNeighborhoods();
   fetchCuisines(); 
 });
-
-
-
