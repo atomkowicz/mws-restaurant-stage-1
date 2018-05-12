@@ -1,4 +1,4 @@
-import idb from 'idb';
+import Database from './db';
 
 /**
  * Common database helper functions.
@@ -13,26 +13,6 @@ class DBHelper {
     const port = 3000; // Change this to your server port
     return `http://localhost:${port}/data/restaurants.json`;
   }
-
-  // dbPromise = idb.open('test-db', 0, (upgradeDb) => {
-  //   switch (upgradeDb.oldVersion) {
-  //     case 0:
-  //       var tableStore = upgradeDb.createObjectStore('tableTest');
-  //       tableStore.put("world", "hello");
-  //   }
-  // })
-
-
-  // fetchRest = () => {
-  //   this.dbPromise.then(function (db) {
-  //     var tx = db.transaction('keyval');
-  //     var keyValStore = tx.objectStore('tableTest');
-  //     return keyValStore.get('hello');
-  //   }).then(function (val) {
-  //     console.log('The value of "hello" is:', val);
-  //   });
-  // }
-
 
   /**
    * Fetch all restaurants.
