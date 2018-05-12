@@ -7,26 +7,21 @@ var map;
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
-    fetchRestaurantFromURL((error, restaurant) => {
+  fetchRestaurantFromURL((error, restaurant) => {
     //   registerServiceWorker();
 
     if (error) { // Got an error!
-        console.log('restaurant')
-
-        console.error(error);
+      console.error(error);
     } else {
-        console.log('restaurant')
-
-        self.map = new google.maps.Map(document.getElementById('map'), {
+      self.map = new google.maps.Map(document.getElementById('map'), {
         zoom: 16,
         center: restaurant.latlng,
         scrollwheel: false
-        });
-        console.log(restaurant)
-        fillBreadcrumb();
-        DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+      });
+      fillBreadcrumb();
+      DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
     }
-    });
+  });
 }
 
 /**
@@ -167,7 +162,7 @@ const createReviewHTML = (review) => {
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
-const fillBreadcrumb = (restaurant=self.restaurant) => {
+const fillBreadcrumb = (restaurant = self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;

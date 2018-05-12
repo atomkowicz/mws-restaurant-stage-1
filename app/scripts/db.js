@@ -10,7 +10,7 @@ const dbPromise = idb.open('test-db', 1, (upgradeDb) => {
 
 class Database {
 
-  static fetchRest() {
+  static fetchRestaurantsFromDb() {
     dbPromise.then(function (db) {
       var tx = db.transaction('keyval');
       var keyValStore = tx.objectStore('tableTest');

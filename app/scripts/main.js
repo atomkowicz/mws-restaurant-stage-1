@@ -6,17 +6,18 @@ var restaurants,
   cuisines
 var map
 var markers = []
-
+var cSelect = document.getElementById('cuisines-select');
+var nSelect = document.getElementById('neighborhoods-select');
 
 /**
  * Fetch all neighborhoods and set their HTML.
  */
-const fetchNeighborhoods = () => { 
+const fetchNeighborhoods = () => {
   DBHelper.fetchNeighborhoods((error, neighborhoods) => {
     if (error) { // Got an error
       console.error(error);
     } else {
-      self.neighborhoods = neighborhoods; 
+      self.neighborhoods = neighborhoods;
       fillNeighborhoodsHTML();
     }
   });
@@ -26,7 +27,7 @@ const fetchNeighborhoods = () => {
  * Set neighborhoods HTML.
  */
 const fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
-  
+
   const select = document.getElementById('neighborhoods-select');
   neighborhoods.forEach(neighborhood => {
     const option = document.createElement('option');
@@ -85,9 +86,6 @@ window.initMap = () => {
  * Update page and map for current restaurants.
  */
 const updateRestaurants = () => {
-  const cSelect = document.getElementById('cuisines-select');
-  const nSelect = document.getElementById('neighborhoods-select');
-
   const cIndex = cSelect.selectedIndex;
   const nIndex = nSelect.selectedIndex;
 
@@ -113,7 +111,7 @@ const resetRestaurants = (restaurants) => {
   const ul = document.getElementById('restaurants-list');
   ul.innerHTML = '';
   // Remove all map markers
-  if(self.markers) self.markers.forEach(m => m.setMap(null));
+  if (self.markers) self.markers.forEach(m => m.setMap(null));
   self.markers = [];
   self.restaurants = restaurants;
 }
@@ -210,5 +208,10 @@ const addMarkersToMap = (restaurants = self.restaurants) => {
 document.addEventListener('DOMContentLoaded', () => {
   // registerServiceWorker();
   fetchNeighborhoods();
-  fetchCuisines(); 
+  fetchCuisines();
+
+  [cSelect, nSelect].forEach(el => el.addEventListener('change', () => {
+    updateRestaurants();
+  }));
+
 });
