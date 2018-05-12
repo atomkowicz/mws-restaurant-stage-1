@@ -15,6 +15,7 @@ import imageminMozjpeg from 'imagemin-mozjpeg';
 import imageminZopfli from 'imagemin-zopfli';
 import imageminSvgo from 'imagemin-svgo';
 import imageminJpegtran from 'imagemin-jpegtran';
+import webpack from 'webpack-stream';
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
@@ -106,20 +107,53 @@ gulp.task('styles', () => {
 
 // Concatenate and minify JavaScript. Transpiles ES2015 code to ES5.
 // see `.babelrc` file.
+// gulp.task('scripts', () =>
+//     gulp.src('./app/scripts/**/*.js')
+//         .pipe($.newer('.tmp/scripts'))
+//         .pipe($.sourcemaps.init())
+//         .pipe($.babel())
+//         .pipe($.sourcemaps.write())
+//         .pipe(gulp.dest('.tmp/scripts'))
+//         .pipe($.concat('main.min.js'))
+//         .pipe($.uglify({ preserveComments: 'some' }))
+//         // Output files
+//         .pipe($.size({ title: 'scripts' }))
+//         .pipe($.sourcemaps.write('.'))
+//         .pipe(gulp.dest('dist/scripts'))
+//         .pipe(gulp.dest('.tmp/scripts'))
+// );
+
 gulp.task('scripts', () =>
-    gulp.src('./app/scripts/**/*.js')
-        .pipe($.newer('.tmp/scripts'))
-        .pipe($.sourcemaps.init())
-        .pipe($.babel())
-        .pipe($.sourcemaps.write())
-        .pipe(gulp.dest('.tmp/scripts'))
-        .pipe($.concat('main.min.js'))
-        .pipe($.uglify({ preserveComments: 'some' }))
-        // Output files
-        .pipe($.size({ title: 'scripts' }))
-        .pipe($.sourcemaps.write('.'))
-        .pipe(gulp.dest('dist/scripts'))
-        .pipe(gulp.dest('.tmp/scripts'))
+    gulp.src('./app/scripts/main.js')
+    .pipe(webpack({
+      output: {
+        filename: '[name].js'
+      },
+      module: {
+        rules: [
+          {
+            test: /\.js$/,
+            exclude: /(node_modules|bower_components)/,
+            use: {
+              loader: 'babel-loader',
+              options: {
+                presets: ['env']
+              }
+            }
+          }
+        ]
+      },
+      devtool: '#inline-source-map'
+    }))
+    .pipe(gulp.dest('.tmp/scripts'))
+    .pipe($.sourcemaps.init({ loadMaps: true }))
+    .pipe($.uglify())
+    .pipe($.rename('main.min.js'))
+    // Output files
+    .pipe($.size({title: 'scripts'}))
+    .pipe($.sourcemaps.write('.'))
+    .pipe(gulp.dest('dist/scripts'))
+    .pipe(gulp.dest('.tmp/scripts'))
 );
 
 // Scan your HTML for assets & optimize them
