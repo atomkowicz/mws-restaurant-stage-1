@@ -1,6 +1,31 @@
 @charset "utf-8";
 /* CSS Document */
 
+body,
+td,
+th,
+p {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  color: #333;
+  line-height: 1.5;
+}
+
+article,
+aside,
+canvas,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
 ul, li {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 10pt;
@@ -32,11 +57,7 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: uppercase;
 }
 /* ====================== Navigation ====================== */
-/* @media screen and (max-width: 768px) {
-  nav h1 { 
-    height: 100vh!important;
-  }
-} */
+
 nav h1 a {
   color: #fff;
   font-size: 14pt;

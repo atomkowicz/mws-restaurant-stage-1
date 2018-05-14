@@ -13,7 +13,7 @@ import imageminPngquant from 'imagemin-pngquant';
 import imageminGiflossy from 'imagemin-giflossy';
 import imageminMozjpeg from 'imagemin-mozjpeg';
 import imageminZopfli from 'imagemin-zopfli';
-// import imageminSvgo from 'imagemin-svgo';
+import imageminSvgo from 'imagemin-svgo';
 import imageminJpegtran from 'imagemin-jpegtran';
 import webpack from 'webpack-stream';
 
@@ -41,12 +41,12 @@ gulp.task('images', () =>
                     optimize: 3, //keep-empty: Preserve empty transparent frames
                     lossy: 2
                 }),
-                // //svg
-                // imageminSvgo({
-                //     plugins: [{
-                //         removeViewBox: false
-                //     }]
-                // }),
+                //svg
+                imageminSvgo({
+                    plugins: [{
+                        removeViewBox: false
+                    }]
+                }),
                 //jpg lossless
                 imageminJpegtran({
                     progressive: true

@@ -1,4 +1,3 @@
-
 import DBHelper from './dbhelper';
 
 var restaurants,
@@ -177,7 +176,6 @@ const addMarkersToMap = (restaurants = self.restaurants) => {
 /**
  * Register Service Worker
  */
-
 const registerServiceWorker = () => {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
@@ -201,22 +199,24 @@ document.addEventListener('DOMContentLoaded', () => {
   [cSelect, nSelect].forEach(el => el.addEventListener('change', () => {
     updateRestaurants();
   }));
+
+  // show map on button click
+  const showMap = document.getElementById('js-show-map');
+  showMap.addEventListener('click', () => {
+    document.getElementById('js-show-map').style.display ='none';
+    document.getElementById('map').style.display ='block';
+  })
 });
 
 
 var prevRatio = 0.0;
-// document.addEventListener("DOMContentLoaded", function (event) {
-
-//   createObserver();
-// }, false);
-
 function createObserver(el) {
   var observer;
 
   var options = {
     root: null,
     rootMargin: "0px",
-    threshold: 1
+    threshold: [1]
   };
 
   observer = new IntersectionObserver(handleIntersect, options);
@@ -247,8 +247,7 @@ function handleIntersect(entries, observer) {
       image.src = srcDesk;
       image.alt = `Restaurant ${restName}`;
       picture.append(image);
-
-      entry.target.append(picture);
+      entry.target.insertAdjacentElement('afterbegin', picture)
       observer.unobserve(entry.target);
     }
 
