@@ -4,11 +4,27 @@ var restaurant;
 var map;
 
 /**
+ * Register Service Worker
+ */
+
+const registerServiceWorker = () => {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('./sw.js').then(function (registration) {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      }, function (err) {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
+};
+
+/**
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
-    //   registerServiceWorker();
+    registerServiceWorker();
 
     if (error) { // Got an error!
       console.error(error);
@@ -185,18 +201,4 @@ const getParameterByName = (name, url) => {
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
-/**
- * Register Service Worker
- */
 
-// registerServiceWorker = () => {
-//   if ('serviceWorker' in navigator) {
-//     window.addEventListener('load', function () {
-//       navigator.serviceWorker.register('./sw.js').then(function (registration) {
-//         console.log('ServiceWorker registration successful with scope: ', registration.scope);
-//       }, function (err) {
-//         console.log('ServiceWorker registration failed: ', err);
-//       });
-//     });
-//   }
-// };

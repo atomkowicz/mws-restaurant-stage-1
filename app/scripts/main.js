@@ -122,7 +122,9 @@ const resetRestaurants = (restaurants) => {
 const fillRestaurantsHTML = (restaurants = self.restaurants) => {
   const ul = document.getElementById('restaurants-list');
   restaurants.forEach(restaurant => {
-    ul.append(createRestaurantHTML(restaurant));
+    let li = createRestaurantHTML(restaurant);
+    ul.append(li);
+    createObserver(li);
   });
   addMarkersToMap();
 }
@@ -132,24 +134,11 @@ const fillRestaurantsHTML = (restaurants = self.restaurants) => {
  */
 const createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
-  const picture = document.createElement('picture');
-
-  const sourceMobile = document.createElement('source');
-  sourceMobile.setAttribute('media', '(max-width: 799px)');
-  sourceMobile.setAttribute('srcset', DBHelper.imageUrlMobileForRestaurant(restaurant));
-  picture.appendChild(sourceMobile);
-
-  const sourceDesk = document.createElement('source');
-  sourceDesk.setAttribute('media', '(min-width: 800px)');
-  sourceDesk.setAttribute('srcset', DBHelper.imageUrlDeskForRestaurant(restaurant));
-  picture.appendChild(sourceDesk);
-
-  const image = document.createElement('img');
-  image.className = 'restaurant-img';
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
-  image.alt = `Restaurant ${restaurant.name}`;
-  picture.append(image);
-  li.append(picture);
+  li.id = `picture-container-${restaurant.id}`;
+  li.classList.add('picture-container');
+  li.setAttribute('data-url-mobile', DBHelper.imageUrlMobileForRestaurant(restaurant));
+  li.setAttribute('data-url-desk', DBHelper.imageUrlDeskForRestaurant(restaurant));
+  li.setAttribute('data-name', `${restaurant.name}`);
 
   const name = document.createElement('h2');
   name.innerHTML = restaurant.name;
@@ -168,7 +157,6 @@ const createRestaurantHTML = (restaurant) => {
   more.href = DBHelper.urlForRestaurant(restaurant);
   more.setAttribute("aria-label", "Restaurant details page");
   li.append(more)
-
   return li
 }
 
@@ -190,17 +178,17 @@ const addMarkersToMap = (restaurants = self.restaurants) => {
  * Register Service Worker
  */
 
-// registerServiceWorker = () => {
-//   if ('serviceWorker' in navigator) {
-//     window.addEventListener('load', function () {
-//       navigator.serviceWorker.register('./sw.js').then(function (registration) {
-//         console.log('ServiceWorker registration successful with scope: ', registration.scope);
-//       }, function (err) {
-//         console.log('ServiceWorker registration failed: ', err);
-//       });
-//     });
-//   }
-// };
+const registerServiceWorker = () => {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('./sw.js').then(function (registration) {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      }, function (err) {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
+};
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
@@ -213,5 +201,57 @@ document.addEventListener('DOMContentLoaded', () => {
   [cSelect, nSelect].forEach(el => el.addEventListener('change', () => {
     updateRestaurants();
   }));
-
 });
+
+
+var prevRatio = 0.0;
+// document.addEventListener("DOMContentLoaded", function (event) {
+
+//   createObserver();
+// }, false);
+
+function createObserver(el) {
+  var observer;
+
+  var options = {
+    root: null,
+    rootMargin: "0px",
+    threshold: 1
+  };
+
+  observer = new IntersectionObserver(handleIntersect, options);
+  observer.observe(el);
+}
+
+function handleIntersect(entries, observer) {
+  entries.forEach(function (entry) {
+    if (entry.intersectionRatio > 0) {
+
+      const picture = document.createElement('picture');
+
+      const srcMobile = entry.target.dataset.urlMobile;
+      const sourceMobile = document.createElement('source');
+      sourceMobile.setAttribute('media', '(max-width: 799px)');
+      sourceMobile.setAttribute('srcset', srcMobile);
+      picture.appendChild(sourceMobile);
+
+      const srcDesk = entry.target.dataset.urlDesk;
+      const sourceDesk = document.createElement('source');
+      sourceDesk.setAttribute('media', '(min-width: 800px)');
+      sourceDesk.setAttribute('srcset', srcDesk);
+      picture.appendChild(sourceDesk);
+
+      const restName = entry.target.dataset.name;
+      const image = document.createElement('img');
+      image.className = 'restaurant-img';
+      image.src = srcDesk;
+      image.alt = `Restaurant ${restName}`;
+      picture.append(image);
+
+      entry.target.append(picture);
+      observer.unobserve(entry.target);
+    }
+
+    prevRatio = entry.intersectionRatio;
+  });
+}

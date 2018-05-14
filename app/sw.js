@@ -9,12 +9,9 @@ var urlsToCache = [
   '/',
   '/index.html',
   '/restaurant.html',
-  '/css/styles.css',
-  '/js/main.js',
-  '/js/restaurant_info.js',
-  '/js/dbhelper.js',
-  '/img/no-image.png',
-  '/data/restaurants.json',
+  '/styles/styles.css',
+  '/scripts/main.js',
+  '/scripts/restaurant_info.js',
   'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700',
 ];
 
@@ -59,8 +56,6 @@ self.addEventListener('fetch', function (event) {
 
 
   if (requestUrl.origin === location.origin) {
-    console.log(requestUrl.pathname)
-
     if (requestUrl.pathname === '/') {
       event.respondWith(caches.match('/index.html'));
       return;
