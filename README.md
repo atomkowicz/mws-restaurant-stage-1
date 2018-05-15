@@ -11,6 +11,7 @@
 ## Production
 
 `gulp default` to generate production files in dist folder
+`gulp serve:dist` to serve preview dist content
 
 ## Server
 

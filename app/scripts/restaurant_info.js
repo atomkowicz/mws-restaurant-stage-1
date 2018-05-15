@@ -35,6 +35,7 @@ window.initMap = () => {
         scrollwheel: false
       });
       fillBreadcrumb();
+
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
     }
   });
@@ -201,4 +202,14 @@ const getParameterByName = (name, url) => {
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
-
+/**
+ * Fetch neighborhoods and cuisines as soon as the page is loaded.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  // show map on button click
+  const showMap = document.getElementById('js-show-map');
+  showMap.addEventListener('click', () => {
+    document.getElementById('js-show-map').style.display ='none';
+    document.getElementById('map').style.display ='block';
+  })
+});

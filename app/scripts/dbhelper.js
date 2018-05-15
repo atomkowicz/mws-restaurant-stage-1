@@ -18,21 +18,25 @@ class DBHelper {
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
+    var cached = null;
 
     // check for data cached in database
     Database.getRestaurants()
       .then((cachedRestaurants) => {
         if (cachedRestaurants.length) {
-          return callback(null, cachedRestaurants);
+          if (!cached) {
+            cached = true;
+            return callback(null, cachedRestaurants);
+          }
         }
-      });
+      })
 
     // fetch data from network and update in database
     fetch(DBHelper.DATABASE_URL, { headers: { 'Accept': 'application/json' } })
       .then(response => response.json())
       .then(restaurants => {
         Database.saveRestaurants(restaurants);
-        return callback(null, restaurants);
+        if(!cached) return callback(null, restaurants);
       }).catch((e) => {
         console.log("Error fetching data from server", e);
       });

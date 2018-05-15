@@ -192,7 +192,7 @@ const registerServiceWorker = () => {
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', () => {
-  // registerServiceWorker();
+  registerServiceWorker();
   fetchNeighborhoods();
   fetchCuisines();
 
@@ -207,7 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('map').style.display ='block';
   })
 });
-
 
 var prevRatio = 0.0;
 function createObserver(el) {
