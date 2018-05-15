@@ -9,16 +9,23 @@ import swPrecache from 'sw-precache';
 import gulpLoadPlugins from 'gulp-load-plugins';
 import { output as pagespeed } from 'psi';
 import pkg from './package.json';
-import imageminPngquant from 'imagemin-pngquant';
-import imageminGiflossy from 'imagemin-giflossy';
-import imageminMozjpeg from 'imagemin-mozjpeg';
-import imageminZopfli from 'imagemin-zopfli';
-import imageminSvgo from 'imagemin-svgo';
-import imageminJpegtran from 'imagemin-jpegtran';
+// import imageminPngquant from 'imagemin-pngquant';
+import imageminPngquant from 'gulp-imagemin'
+// import imageminGiflossy from 'imagemin-giflossy';
+import imageminGiflossy from 'gulp-imagemin';
+// import imageminMozjpeg from 'imagemin-mozjpeg';
+import imageminMozjpeg from 'gulp-imagemin';
+// import imageminZopfli from 'imagemin-zopfli';
+import imageminZopfli from 'gulp-imagemin';
+// import imageminSvgo from 'imagemin-svgo';
+import imageminSvgo from 'gulp-imagemin';
+// import imageminJpegtran from 'imagemin-jpegtran';
+import imageminJpegtran from 'gulp-imagemin';
 import webpack from 'webpack-stream';
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
+var production = !!$.util.env.production;
 
 // Optimize images
 gulp.task('images', () =>
@@ -41,7 +48,7 @@ gulp.task('images', () =>
                     optimize: 3, //keep-empty: Preserve empty transparent frames
                     lossy: 2
                 }),
-                //svg
+                // svg
                 imageminSvgo({
                     plugins: [{
                         removeViewBox: false
@@ -66,6 +73,7 @@ gulp.task('copy', () =>
     gulp.src([
         'app/*',
         '!app/*.html',
+        '!data/*',
         '!app/original_img',
     ], {
             dot: true
@@ -85,6 +93,7 @@ gulp.task('styles', () => {
         'app/styles/**/*.css'
     ])
         .pipe($.newer('.tmp/scss'))
+        .pipe($.if(!production, $.sourcemaps.init()))
         .pipe($.sourcemaps.init())
         .pipe($.sass({
             precision: 10
@@ -94,7 +103,7 @@ gulp.task('styles', () => {
         // Concatenate and minify styles
         .pipe($.if('*.css', $.cssnano()))
         .pipe($.size({ title: 'styles' }))
-        .pipe($.sourcemaps.write('./'))
+        .pipe($.if(!production, $.sourcemaps.write('./')))
         .pipe(gulp.dest('dist/styles'))
         .pipe(gulp.dest('.tmp/styles'));
 });
