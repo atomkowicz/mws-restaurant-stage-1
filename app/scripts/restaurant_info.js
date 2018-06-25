@@ -24,7 +24,7 @@ const registerServiceWorker = () => {
  */
 window.initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
-    registerServiceWorker();
+    //registerServiceWorker();
 
     if (error) { // Got an error!
       console.error(error);

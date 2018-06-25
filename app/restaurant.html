@@ -160,6 +160,38 @@
       <ul id="reviews-list"></ul>
     </section>
     <!-- End reviews -->
+
+    <!-- Begin review form -->
+    <section id="review-form-container">
+      <h3>Create new restaurant review</h3>
+      <form role="form">
+        <fieldset>
+          <legend>Rating:</legend>
+          <div class="rating">
+            <input type="radio" id="rate5" name="rating" value="5">
+            <label for="rate5" title="Amazing">☆</label>
+            <input type="radio" id="rate4" name="rating" value="4">
+            <label for="rate4" title="Very good">☆</label>
+            <input type="radio" id="rate3" name="rating" value="3">
+            <label for="rate3" title="Average">☆</label>
+            <input type="radio" id="rate2" name="rating" value="2">
+            <label for="rate2" title="Not good">☆</label>
+            <input type="radio" id="rate1" name="rating" value="1">
+            <label for="rate1" title="Terrible">☆</label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Add to favourites:</legend>
+          <div class="favourite">
+            <input id="favourite-input" type="checkbox">
+            <label for="favourite-input"></label>
+          </div>
+        </fieldset>
+        <textarea id="comment" placeholder="Enter your comment"></textarea>
+        <button type="submit">Submit review</button>
+      </form>
+    </section>
+    <!-- End review form -->
   </main>
   <!-- End main -->
 
