@@ -164,7 +164,8 @@
     <!-- Begin review form -->
     <section id="review-form-container">
       <h3>Create new restaurant review</h3>
-      <form role="form">
+
+      <form action="" role="form" id="js-submit-review">
         <fieldset>
           <legend>Rating:</legend>
           <div class="rating">
@@ -180,15 +181,16 @@
             <label for="rate1" title="Terrible">☆</label>
           </div>
         </fieldset>
-        <fieldset>
+        <!-- <fieldset>
           <legend>Add to favourites:</legend>
           <div class="favourite">
-            <input id="favourite-input" type="checkbox">
+            <input id="favourite-input" type="checkbox" name="favourite">
             <label for="favourite-input"></label>
           </div>
-        </fieldset>
-        <textarea id="comment" placeholder="Enter your comment"></textarea>
-        <button type="submit">Submit review</button>
+        </fieldset> -->
+        <textarea id="comment" name="comment" placeholder="Enter your comment"></textarea>
+        <input type="text" name="name"/>
+        <input type="submit" value="go">
       </form>
     </section>
     <!-- End review form -->

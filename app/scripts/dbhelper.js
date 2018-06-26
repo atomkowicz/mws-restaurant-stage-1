@@ -1,5 +1,7 @@
 import Database from './db';
 
+const PORT = 1337; // Change this to your server port
+
 /**
  * Common database helper functions.
  */
@@ -10,9 +12,9 @@ class DBHelper {
    * Change this to restaurants.json file location on your server.
    */
   static get DATABASE_URL() {
-    const port = 1337; // Change this to your server port
-    return `http://localhost:${port}/restaurants`;
+    return `http://localhost:${PORT}/`;
   }
+
 
   /**
    * Fetch all restaurants.
@@ -32,13 +34,14 @@ class DBHelper {
       })
 
     // fetch data from network and update in database
-    fetch(DBHelper.DATABASE_URL, { headers: { 'Accept': 'application/json' } })
+    fetch(DBHelper.DATABASE_URL + 'restaurants', { headers: { 'Accept': 'application/json' } })
       .then(response => response.json())
       .then(restaurants => {
         Database.saveRestaurants(restaurants);
-        if(!cached) return callback(null, restaurants);
+        if (!cached) return callback(null, restaurants);
       }).catch((e) => {
         console.log("Error fetching data from server", e);
+        callback("Error fetching data from server", null);
       });
   }
 
@@ -46,19 +49,50 @@ class DBHelper {
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id, callback) {
-    // fetch all restaurants with proper error handling.
-    DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null);
-      } else {
-        const restaurant = restaurants.find(r => r.id == id);
-        if (restaurant) { // Got the restaurant
-          callback(null, restaurant);
-        } else { // Restaurant does not exist in the database
-          callback('Restaurant does not exist', null);
-        }
-      }
-    });
+
+    fetch(DBHelper.DATABASE_URL + 'restaurants/' + id, { headers: { 'Accept': 'application/json' } })
+      .then(response => response.json())
+      .then(restaurant => {
+        //Database.saveReviews(reviews);
+        return callback(null, restaurant);
+      }).catch((e) => {
+        console.log("Error fetching data from server", e);
+        callback("Error fetching data from server", null);
+      });
+  }
+
+  /**
+   * Fetch a restaurant's reviews by its ID.
+   */
+  static fetchReviewsForRestaurant(id, callback) {
+
+    fetch(DBHelper.DATABASE_URL + 'reviews/?restaurant_id=' + id, { headers: { 'Accept': 'application/json' } })
+      .then(response => response.json())
+      .then(reviews => {
+        //Database.saveReviews(reviews);
+        return callback(null, reviews);
+      }).catch((e) => {
+        console.log("Error fetching data from server", e);
+      });
+  }
+
+  /**
+   * Post a review.
+   */
+  static postReview(data, callback) {
+
+    fetch(DBHelper.DATABASE_URL + 'reviews/',
+      {
+        headers: { 'Accept': 'application/json' },
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(reviews => {
+        this.fetchReviewsForRestaurant(1)
+      }).catch((e) => {
+        console.log("Error fetching data from server", e);
+      });
   }
 
   /**
