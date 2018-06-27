@@ -163,7 +163,7 @@
 
     <!-- Begin review form -->
     <section id="review-form-container">
-      <h3>Create new restaurant review</h3>
+      <h3>Add review</h3>
 
       <form action="" role="form" id="js-submit-review">
         <fieldset>
@@ -173,7 +173,7 @@
             <label for="rate5" title="Amazing">☆</label>
             <input type="radio" id="rate4" name="rating" value="4">
             <label for="rate4" title="Very good">☆</label>
-            <input type="radio" id="rate3" name="rating" value="3">
+            <input type="radio" id="rate3" name="rating" checked value="3">
             <label for="rate3" title="Average">☆</label>
             <input type="radio" id="rate2" name="rating" value="2">
             <label for="rate2" title="Not good">☆</label>
@@ -188,8 +188,8 @@
             <label for="favourite-input"></label>
           </div>
         </fieldset> -->
-        <textarea id="comment" name="comment" placeholder="Enter your comment"></textarea>
-        <input type="text" name="name"/>
+        <textarea id="comment" name="comments" placeholder="Enter your comment">great restaurant</textarea>
+        <input type="text" name="name" placeholder="Aga" value="Aga">
         <input type="submit" value="go">
       </form>
     </section>

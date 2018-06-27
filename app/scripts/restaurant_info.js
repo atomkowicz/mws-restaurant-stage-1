@@ -1,6 +1,7 @@
 import DBHelper from './dbhelper';
 
 var restaurant;
+var reviews;
 var map;
 
 /**
@@ -69,11 +70,11 @@ const fetchRestaurantFromURL = (callback) => {
     });
   }
 }
-/**
+/**fetchRestaurantReviewsFromURL
  * Get current reviews from page URL.
  */
-const fetchRestaurantReviewsFromURL = (error, callback) => {
-  if (self.reviews) { // restaurant already fetched!
+const fetchRestaurantReviewsFromURL = (callback) => {
+  if (self.reviews) { // already fetched!
     callback(null, self.reviews)
     return;
   }
@@ -93,11 +94,6 @@ const fetchRestaurantReviewsFromURL = (error, callback) => {
     });
   }
 }
-/**
- * Get current reviews from page URL.
- */
-
-
 
 /**
  * Create restaurant HTML and add it to the webpage
@@ -177,7 +173,7 @@ const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     return;
   }
   const ul = document.getElementById('reviews-list');
-  Object.keys(reviews).forEach(review => {
+  reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
   container.appendChild(ul);
@@ -261,20 +257,21 @@ document.getElementById("js-submit-review").addEventListener("submit", (e) => {
 
   const id = getParameterByName('id');
   data["restaurant_id"] = id;
-  console.log(data)
 
   if (!id) { // no id found in URL
     let error = 'No restaurant id in URL'
-    // callback(error, null);
   } else {
+    form.reset();
+
     DBHelper.postReview(data, (error, reviews) => {
+      console.log(reviews)
       self.reviews = reviews;
       if (!reviews) {
         console.error(error);
         return;
       }
       fillReviewsHTML(reviews);
-      callback(null, reviews)
+     
     });
   }
 });

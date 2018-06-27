@@ -70,6 +70,7 @@ class DBHelper {
       .then(response => response.json())
       .then(reviews => {
         //Database.saveReviews(reviews);
+        console.log(reviews)
         return callback(null, reviews);
       }).catch((e) => {
         console.log("Error fetching data from server", e);
@@ -81,16 +82,26 @@ class DBHelper {
    */
   static postReview(data, callback) {
 
-    fetch(DBHelper.DATABASE_URL + 'reviews/',
-      {
-        headers: { 'Accept': 'application/json' },
-        method: 'POST',
-        body: JSON.stringify(data)
+    fetch(DBHelper.DATABASE_URL + 'reviews/', {
+      headers: { 'Accept': 'application/json' },
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+      .then((result) => {
+        if (result.statusText == "Created") {
+          console.log("new review added");
+
+          fetch(DBHelper.DATABASE_URL + 'reviews/?restaurant_id=' + 1, { headers: { 'Accept': 'application/json' } })
+            .then(response => response.json())
+            .then(reviews => {
+              //Database.saveReviews(reviews);
+              return callback(null, reviews);
+            }).catch((e) => {
+              console.log("Error fetching data from server", e);
+            });
+        }
       })
-      .then(response => response.json())
-      .then(reviews => {
-        this.fetchReviewsForRestaurant(1)
-      }).catch((e) => {
+      .catch((e) => {
         console.log("Error fetching data from server", e);
       });
   }
