@@ -53,7 +53,6 @@ class DBHelper {
     fetch(DBHelper.DATABASE_URL + 'restaurants/' + id, { headers: { 'Accept': 'application/json' } })
       .then(response => response.json())
       .then(restaurant => {
-        //Database.saveReviews(reviews);
         return callback(null, restaurant);
       }).catch((e) => {
         console.log("Error fetching data from server", e);
@@ -69,8 +68,7 @@ class DBHelper {
     fetch(DBHelper.DATABASE_URL + 'reviews/?restaurant_id=' + id, { headers: { 'Accept': 'application/json' } })
       .then(response => response.json())
       .then(reviews => {
-        //Database.saveReviews(reviews);
-        console.log(reviews)
+        Database.saveReviews(reviews);
         return callback(null, reviews);
       }).catch((e) => {
         console.log("Error fetching data from server", e);
@@ -91,7 +89,7 @@ class DBHelper {
         if (result.statusText == "Created") {
           console.log("new review added");
 
-          fetch(DBHelper.DATABASE_URL + 'reviews/?restaurant_id=' + 1, { headers: { 'Accept': 'application/json' } })
+          fetch(DBHelper.DATABASE_URL + 'reviews/?restaurant_id=' + data.restaurant_id, { headers: { 'Accept': 'application/json' } })
             .then(response => response.json())
             .then(reviews => {
               //Database.saveReviews(reviews);
