@@ -256,7 +256,7 @@ document.getElementById("js-submit-review").addEventListener("submit", (e) => {
   });
 
   const id = getParameterByName('id');
-  data["restaurant_id"] = id;
+  data["restaurant_id"] = parseInt(id);
 
   if (!id) { // no id found in URL
     let error = 'No restaurant id in URL'
@@ -264,14 +264,12 @@ document.getElementById("js-submit-review").addEventListener("submit", (e) => {
     form.reset();
 
     DBHelper.postReview(data, (error, reviews) => {
-      console.log(reviews)
       self.reviews = reviews;
       if (!reviews) {
         console.error(error);
         return;
       }
-      fillReviewsHTML(reviews);
-     
+      fillReviewsHTML(reviews);    
     });
   }
 });

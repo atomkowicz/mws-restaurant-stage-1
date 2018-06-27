@@ -5,7 +5,8 @@ const dbPromise = idb.open('restaurants', 1, (upgradeDb) => {
     case 0:
       var restaurantsDb = upgradeDb.createObjectStore('restaurants');
       var reviewsDb = upgradeDb.createObjectStore('reviews');
-      // restaurantsDb.put("restaurant", { keyPath: 'id' });
+      //reviewsDb.createIndex('restaurant_id', 'restaurant_id');
+      reviewsDb.createIndex("restaurant_id", "restaurant_id", { unique: false });
   }
 })
 
@@ -18,7 +19,7 @@ class Database {
       const store = transaction.objectStore('restaurants');
       return store.getAll();
     }).catch(err => {
-      console.log('error getting data from database', err)
+      console.log('error getting restaurants from database', err)
     })
   }
 
@@ -38,8 +39,24 @@ class Database {
       const store = transaction.objectStore('reviews');  
       console.log(reviews)   
       reviews.forEach(review => store.put(review, parseInt(review.id)));
+
+      var reviewsIndex = store.index('restaurant_id');
+      console.log(reviewsIndex.getAll(4));
+
+
     }).catch(err => {
       console.log('error saving reviews to database', err)
+    })
+  }
+
+  static getReviews() {
+    return dbPromise.then((db) => {
+      if (!db) return;
+      const transaction = db.transaction('restaurants');
+      const store = transaction.objectStore('reviews');
+      return store.getAll();
+    }).catch(err => {
+      console.log('error getting review from database', err)
     })
   }
 
