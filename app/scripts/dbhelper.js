@@ -112,29 +112,27 @@ class DBHelper {
         if (navigator.onLine === false) {
           // We are offline, save review to indexedDB for later
           IndexedDB.saveWaitingReview(data);
-          console.log("You seem to be offline. Your review has been saved locally and will be updated on server as soon as connection is restored", e);
-          window.addEventListener('online', DBHelper.updateIndicator);
+          console.log("You're offline! 😱, saving review to indexedDB until connection is restored 😊", e);
+          window.addEventListener('online', function test(callback) { DBHelper.updateIndicator(callback) });
         }
       });
   }
 
   static updateIndicator(callback) {
-    if (navigator.onLine) { // true|false
-      console.log("Im online again!");
-      window.removeEventListener('online', DBHelper.updateIndicator);
+    if (navigator.onLine) {
+      console.log("😎 You're online again! Post stashed review and clear db");
 
+      window.removeEventListener('online', DBHelper.updateIndicator);
       const waitingReviews = IndexedDB.getWaitingReviews();
 
       waitingReviews.then(reviews => {
-
         if (reviews.length) {
           reviews.forEach(review => {
             console.log(review)
 
-            DBHelper.postReview(review, callback => {
-              console.log("fill html");
-              console.log(callback)
-              //fillReviewsHTML(reviews);
+            DBHelper.postReview(review, (error, reviews) => {
+              console.log("Refreshing reviews list");
+              fillReviewsHTML(reviews);
               IndexedDB.clearWaitingReviews();
             });
           })
