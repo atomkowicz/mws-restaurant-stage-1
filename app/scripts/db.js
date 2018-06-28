@@ -10,7 +10,7 @@ const dbPromise = idb.open('restaurants', 1, (upgradeDb) => {
   }
 })
 
-class Database {
+class IndexedDB {
 
   static getRestaurants() {
     return dbPromise.then((db) => {
@@ -39,27 +39,22 @@ class Database {
       const store = transaction.objectStore('reviews');  
       console.log(reviews)   
       reviews.forEach(review => store.put(review, parseInt(review.id)));
-
-      var reviewsIndex = store.index('restaurant_id');
-      console.log(reviewsIndex.getAll(4));
-
-
     }).catch(err => {
       console.log('error saving reviews to database', err)
     })
   }
 
-  static getReviews() {
+  static getReviews(id) {
     return dbPromise.then((db) => {
       if (!db) return;
-      const transaction = db.transaction('restaurants');
+      const transaction = db.transaction('reviews');
       const store = transaction.objectStore('reviews');
-      return store.getAll();
+      var reviewsIndex = store.index('restaurant_id');
+      return store.getAll(id);
     }).catch(err => {
       console.log('error getting review from database', err)
     })
   }
-
 }
 
-export default Database;
+export default IndexedDB;

@@ -1,4 +1,4 @@
-import Database from './db';
+import IndexedDB from './db';
 
 const PORT = 1337; // Change this to your server port
 
@@ -23,7 +23,7 @@ class DBHelper {
     var cached = null;
 
     // check for data cached in database
-    Database.getRestaurants()
+    IndexedDB.getRestaurants()
       .then((cachedRestaurants) => {
         if (cachedRestaurants.length) {
           if (!cached) {
@@ -37,7 +37,7 @@ class DBHelper {
     fetch(DBHelper.DATABASE_URL + 'restaurants', { headers: { 'Accept': 'application/json' } })
       .then(response => response.json())
       .then(restaurants => {
-        Database.saveRestaurants(restaurants);
+        IndexedDB.saveRestaurants(restaurants);
         if (!cached) return callback(null, restaurants);
       }).catch((e) => {
         console.log("Error fetching data from server", e);
@@ -68,7 +68,7 @@ class DBHelper {
     fetch(DBHelper.DATABASE_URL + 'reviews/?restaurant_id=' + id, { headers: { 'Accept': 'application/json' } })
       .then(response => response.json())
       .then(reviews => {
-        Database.saveReviews(reviews);
+        IndexedDB.saveReviews(reviews);
         return callback(null, reviews);
       }).catch((e) => {
         console.log("Error fetching data from server", e);
