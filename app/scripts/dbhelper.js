@@ -1,4 +1,5 @@
 import IndexedDB from './db';
+import fillReviewsHTML from './restaurant_info';
 
 const PORT = 1337; // Change this to your server port
 
@@ -71,7 +72,7 @@ class DBHelper {
         IndexedDB.saveReviews(reviews);
         return callback(null, reviews);
       }).catch((e) => {
-        console.log("Error fetching data from server", e);
+        console.log("Error fetching reviews from server", e);
       });
   }
 
@@ -92,16 +93,52 @@ class DBHelper {
           fetch(DBHelper.DATABASE_URL + 'reviews/?restaurant_id=' + data.restaurant_id, { headers: { 'Accept': 'application/json' } })
             .then(response => response.json())
             .then(reviews => {
-              //Database.saveReviews(reviews);
+              IndexedDB.saveReviews(reviews);
               return callback(null, reviews);
             }).catch((e) => {
-              console.log("Error fetching data from server", e);
+              console.log("Error fetching reviews from server", e);
             });
+
+        } else {
+          console.log("Error, review was not created: " + result.statusText);
+          return callback("Error, review was not created: " + result.statusText, null);
         }
       })
       .catch((e) => {
-        console.log("Error fetching data from server", e);
+        console.log("Error posting review to server", e);
+        if (navigator.onLine === false) {
+          // We are offline, save review to indexedDB for later
+          IndexedDB.saveWaitingReview(data);
+          console.log("You seem to be offline. Your review has been saved locally and will be updated on server as soon as connection is restored", e);
+          window.addEventListener('online', DBHelper.updateIndicator);
+        }
       });
+  }
+
+  static updateIndicator() {
+    if (navigator.onLine) { // true|false
+      console.log("Im online again!");
+      window.removeEventListener('online', DBHelper.updateIndicator);
+
+      const waitingReviews = IndexedDB.getWaitingReviews();
+
+      waitingReviews.then(reviews => {
+
+        if (reviews.length) {
+          reviews.forEach(review => {
+            console.log(review)
+
+            DBHelper.postReview(review, (error, reviews) => {
+              console.log("fill html");
+              fillReviewsHTML(reviews);
+              IndexedDB.clearWaitingReviews();
+            });
+          })
+        }
+
+      })
+
+    }
   }
 
   /**

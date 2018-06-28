@@ -3,10 +3,10 @@ import idb from 'idb';
 const dbPromise = idb.open('restaurants', 1, (upgradeDb) => {
   switch (upgradeDb.oldVersion) {
     case 0:
-      var restaurantsDb = upgradeDb.createObjectStore('restaurants');
-      var reviewsDb = upgradeDb.createObjectStore('reviews');
-      //reviewsDb.createIndex('restaurant_id', 'restaurant_id');
-      reviewsDb.createIndex("restaurant_id", "restaurant_id", { unique: false });
+      var restaurantsStore = upgradeDb.createObjectStore('restaurants');
+      var reviewsStore = upgradeDb.createObjectStore('reviews');
+      var waitingStore = upgradeDb.createObjectStore('waiting', {keyPath: 'key', autoIncrement: true});
+      reviewsStore.createIndex("restaurant_id", "restaurant_id", { unique: false });
   }
 })
 
@@ -37,7 +37,6 @@ class IndexedDB {
     return dbPromise.then((db) => {
       const transaction = db.transaction('reviews', 'readwrite');
       const store = transaction.objectStore('reviews');  
-      console.log(reviews)   
       reviews.forEach(review => store.put(review, parseInt(review.id)));
     }).catch(err => {
       console.log('error saving reviews to database', err)
@@ -53,6 +52,39 @@ class IndexedDB {
       return store.getAll(id);
     }).catch(err => {
       console.log('error getting review from database', err)
+    })
+  }
+
+  static saveWaitingReview(review) {
+    console.log(review);
+    return dbPromise.then((db) => {
+      const transaction = db.transaction('waiting', 'readwrite');
+      const store = transaction.objectStore('waiting');  
+      store.put(review)
+    }).catch(err => {
+      console.log('error saving review to database', err)
+    })
+  }
+
+  static getWaitingReviews() {
+    return dbPromise.then((db) => {
+      if (!db) return;
+      const transaction = db.transaction('waiting');
+      const store = transaction.objectStore('waiting');
+      return store.getAll();
+    }).catch(err => {
+      console.log('error getting review from database', err)
+    })
+  }
+
+  static clearWaitingReviews() {
+    return dbPromise.then((db) => {
+      if (!db) return;
+      const transaction = db.transaction('waiting', 'readwrite');
+      const store = transaction.objectStore('waiting');
+      return store.clear();
+    }).catch(err => {
+      console.log('error clearing waiting store', err)
     })
   }
 }

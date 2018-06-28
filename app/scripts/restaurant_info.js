@@ -25,7 +25,7 @@ const registerServiceWorker = () => {
  */
 window.initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
-    //registerServiceWorker();
+    registerServiceWorker();
 
     if (error) { // Got an error!
       console.error(error);
@@ -160,7 +160,7 @@ const fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hour
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+export const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
@@ -245,7 +245,10 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 });
 
-document.getElementById("js-submit-review").addEventListener("submit", (e) => {
+const submit = document.getElementById("js-submit-review");
+
+if (submit != null)
+submit.addEventListener("submit", (e) => {
   e.preventDefault();
   var form = document.getElementById('js-submit-review');
   var formData = new FormData(form);
