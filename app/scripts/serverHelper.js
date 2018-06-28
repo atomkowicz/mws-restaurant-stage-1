@@ -29,6 +29,7 @@ class ServerHelper {
         if (cachedRestaurants.length) {
           if (!cached) {
             cached = true;
+            // console.log(cachedRestaurants)
             return callback(null, cachedRestaurants);
           }
         }
@@ -42,7 +43,6 @@ class ServerHelper {
         if (!cached) return callback(null, restaurants);
       }).catch((e) => {
         console.log("Error fetching data from server", e);
-        callback("Error fetching data from server 😢", null);
       });
   }
 
@@ -65,15 +65,27 @@ class ServerHelper {
    * Fetch a restaurant's reviews by its ID.
    */
   static fetchReviewsForRestaurant(id, callback) {
+    var cached = null;
+
+    // check for data cached in database
+    IndexedDB.getReviews(id)
+      .then((stashedReviews) => {
+        if (stashedReviews.length) {
+          if (!cached) {
+            cached = true;
+            return callback(null, stashedReviews);
+          }
+        }
+      })
 
     fetch(ServerHelper.DATABASE_URL + 'reviews/?restaurant_id=' + id, { headers: { 'Accept': 'application/json' } })
       .then(response => response.json())
       .then(reviews => {
         IndexedDB.saveReviews(reviews);
+        if (!cached) return callback(null, reviews);
         /// DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWSDELETE ALL REVIEWSDELETE ALL REVIEWS
         //ServerHelper.deleteAllReviews(reviews);
         /// DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWSDELETE ALL REVIEWSDELETE ALL REVIEWS
-        return callback(null, reviews);
       }).catch((e) => {
         console.log("Error fetching reviews from server 😢", e);
       });
@@ -91,7 +103,7 @@ class ServerHelper {
     })
       .then((result) => {
         if (result.statusText == "Created") {
-          console.log("Review was successfully posted to server 🧐");
+          console.log("Review was successfully posted to server 😌");
 
           fetch(ServerHelper.DATABASE_URL + 'reviews/?restaurant_id=' + data.restaurant_id, { headers: { 'Accept': 'application/json' } })
             .then(response => response.json())
@@ -103,16 +115,14 @@ class ServerHelper {
             });
 
         } else {
-          console.log("Error 😢😠, review was not created: " + result.statusText);
           return callback("Error, review was not created: " + result.statusText, null);
         }
       })
       .catch((e) => {
-        console.log("Error posting review to server", e);
         if (navigator.onLine === false) {
           // We are offline, save review to indexedDB for later
           IndexedDB.saveWaitingReview(data);
-          console.log("You're offline! 😱, saving review to indexedDB until connection is restored 😓", e);
+          console.log("You're offline! 😱, I'm saving review to indexedDB until connection is restored 😓");
           window.addEventListener('online', function test(callback) { ServerHelper.updateIndicator(callback) });
         }
       });
@@ -120,7 +130,7 @@ class ServerHelper {
 
   static updateIndicator(callback) {
     if (navigator.onLine) {
-      console.log("😎 You're online again! Posting stashed review and clear db 😊");
+      console.log("😎 You're online again! I'm posting stashed review and clearing db 😊");
 
       window.removeEventListener('online', ServerHelper.updateIndicator);
       const waitingReviews = IndexedDB.getWaitingReviews();
@@ -128,10 +138,8 @@ class ServerHelper {
       waitingReviews.then(reviews => {
         if (reviews.length) {
           reviews.forEach(review => {
-            console.log(review)
-
             ServerHelper.postReview(review, (error, reviews) => {
-              console.log("Refreshing reviews list 😌");
+              console.log("Refreshing reviews list...");
               fillReviewsHTML(reviews);
               IndexedDB.clearWaitingReviews();
             });
@@ -287,7 +295,6 @@ class ServerHelper {
 
   static deleteAllReviews(reviews) {
     for (let review of reviews) {
-      console.log(review.id)
       ServerHelper.deleteReview(review.id);
     }
   }

@@ -56,7 +56,6 @@ class IndexedDB {
   }
 
   static saveWaitingReview(review) {
-    console.log(review);
     return dbPromise.then((db) => {
       const transaction = db.transaction('waiting', 'readwrite');
       const store = transaction.objectStore('waiting');  
