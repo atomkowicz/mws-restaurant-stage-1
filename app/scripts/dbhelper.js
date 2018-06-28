@@ -1,5 +1,5 @@
 import IndexedDB from './db';
-import fillReviewsHTML from './restaurant_info';
+import { fillReviewsHTML } from './restaurant_info';
 
 const PORT = 1337; // Change this to your server port
 
@@ -70,6 +70,9 @@ class DBHelper {
       .then(response => response.json())
       .then(reviews => {
         IndexedDB.saveReviews(reviews);
+        /// DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWSDELETE ALL REVIEWSDELETE ALL REVIEWS
+        //DBHelper.deleteAllReviews(reviews);
+        /// DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWSDELETE ALL REVIEWSDELETE ALL REVIEWS
         return callback(null, reviews);
       }).catch((e) => {
         console.log("Error fetching reviews from server", e);
@@ -115,7 +118,7 @@ class DBHelper {
       });
   }
 
-  static updateIndicator() {
+  static updateIndicator(callback) {
     if (navigator.onLine) { // true|false
       console.log("Im online again!");
       window.removeEventListener('online', DBHelper.updateIndicator);
@@ -128,16 +131,15 @@ class DBHelper {
           reviews.forEach(review => {
             console.log(review)
 
-            DBHelper.postReview(review, (error, reviews) => {
+            DBHelper.postReview(review, callback => {
               console.log("fill html");
-              fillReviewsHTML(reviews);
+              console.log(callback)
+              //fillReviewsHTML(reviews);
               IndexedDB.clearWaitingReviews();
             });
           })
         }
-
       })
-
     }
   }
 
@@ -273,6 +275,23 @@ class DBHelper {
       animation: google.maps.Animation.DROP
     });
     return marker;
+  }
+
+  /**
+   * Delete review.
+   */
+  static deleteReview(id) {
+    fetch(DBHelper.DATABASE_URL + 'reviews/' + id, {
+      headers: { 'Accept': 'application/json' },
+      method: 'DELETE',
+    })
+  }
+
+  static deleteAllReviews(reviews) {
+    for (let review of reviews) {
+      console.log(review.id)
+      DBHelper.deleteReview(review.id);
+    }
   }
 
 }
