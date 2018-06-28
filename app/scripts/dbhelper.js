@@ -6,7 +6,7 @@ const PORT = 1337; // Change this to your server port
 /**
  * Common database helper functions.
  */
-class DBHelper {
+class ServerHelper {
 
   /**
    * Database URL.
@@ -35,14 +35,14 @@ class DBHelper {
       })
 
     // fetch data from network and update in database
-    fetch(DBHelper.DATABASE_URL + 'restaurants', { headers: { 'Accept': 'application/json' } })
+    fetch(ServerHelper.DATABASE_URL + 'restaurants', { headers: { 'Accept': 'application/json' } })
       .then(response => response.json())
       .then(restaurants => {
         IndexedDB.saveRestaurants(restaurants);
         if (!cached) return callback(null, restaurants);
       }).catch((e) => {
         console.log("Error fetching data from server", e);
-        callback("Error fetching data from server", null);
+        callback("Error fetching data from server 😢", null);
       });
   }
 
@@ -51,12 +51,12 @@ class DBHelper {
    */
   static fetchRestaurantById(id, callback) {
 
-    fetch(DBHelper.DATABASE_URL + 'restaurants/' + id, { headers: { 'Accept': 'application/json' } })
+    fetch(ServerHelper.DATABASE_URL + 'restaurants/' + id, { headers: { 'Accept': 'application/json' } })
       .then(response => response.json())
       .then(restaurant => {
         return callback(null, restaurant);
       }).catch((e) => {
-        console.log("Error fetching data from server", e);
+        console.log("Error fetching data from server 😢", e);
         callback("Error fetching data from server", null);
       });
   }
@@ -66,16 +66,16 @@ class DBHelper {
    */
   static fetchReviewsForRestaurant(id, callback) {
 
-    fetch(DBHelper.DATABASE_URL + 'reviews/?restaurant_id=' + id, { headers: { 'Accept': 'application/json' } })
+    fetch(ServerHelper.DATABASE_URL + 'reviews/?restaurant_id=' + id, { headers: { 'Accept': 'application/json' } })
       .then(response => response.json())
       .then(reviews => {
         IndexedDB.saveReviews(reviews);
         /// DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWSDELETE ALL REVIEWSDELETE ALL REVIEWS
-        //DBHelper.deleteAllReviews(reviews);
+        //ServerHelper.deleteAllReviews(reviews);
         /// DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWSDELETE ALL REVIEWSDELETE ALL REVIEWS
         return callback(null, reviews);
       }).catch((e) => {
-        console.log("Error fetching reviews from server", e);
+        console.log("Error fetching reviews from server 😢", e);
       });
   }
 
@@ -84,26 +84,26 @@ class DBHelper {
    */
   static postReview(data, callback) {
 
-    fetch(DBHelper.DATABASE_URL + 'reviews/', {
+    fetch(ServerHelper.DATABASE_URL + 'reviews/', {
       headers: { 'Accept': 'application/json' },
       method: 'POST',
       body: JSON.stringify(data)
     })
       .then((result) => {
         if (result.statusText == "Created") {
-          console.log("new review added");
+          console.log("Review was successfully posted to server 🧐");
 
-          fetch(DBHelper.DATABASE_URL + 'reviews/?restaurant_id=' + data.restaurant_id, { headers: { 'Accept': 'application/json' } })
+          fetch(ServerHelper.DATABASE_URL + 'reviews/?restaurant_id=' + data.restaurant_id, { headers: { 'Accept': 'application/json' } })
             .then(response => response.json())
             .then(reviews => {
               IndexedDB.saveReviews(reviews);
               return callback(null, reviews);
             }).catch((e) => {
-              console.log("Error fetching reviews from server", e);
+              console.log("Error fetching reviews from server 😢", e);
             });
 
         } else {
-          console.log("Error, review was not created: " + result.statusText);
+          console.log("Error 😢😠, review was not created: " + result.statusText);
           return callback("Error, review was not created: " + result.statusText, null);
         }
       })
@@ -112,17 +112,17 @@ class DBHelper {
         if (navigator.onLine === false) {
           // We are offline, save review to indexedDB for later
           IndexedDB.saveWaitingReview(data);
-          console.log("You're offline! 😱, saving review to indexedDB until connection is restored 😊", e);
-          window.addEventListener('online', function test(callback) { DBHelper.updateIndicator(callback) });
+          console.log("You're offline! 😱, saving review to indexedDB until connection is restored 😓", e);
+          window.addEventListener('online', function test(callback) { ServerHelper.updateIndicator(callback) });
         }
       });
   }
 
   static updateIndicator(callback) {
     if (navigator.onLine) {
-      console.log("😎 You're online again! Post stashed review and clear db");
+      console.log("😎 You're online again! Posting stashed review and clear db 😊");
 
-      window.removeEventListener('online', DBHelper.updateIndicator);
+      window.removeEventListener('online', ServerHelper.updateIndicator);
       const waitingReviews = IndexedDB.getWaitingReviews();
 
       waitingReviews.then(reviews => {
@@ -130,8 +130,8 @@ class DBHelper {
           reviews.forEach(review => {
             console.log(review)
 
-            DBHelper.postReview(review, (error, reviews) => {
-              console.log("Refreshing reviews list");
+            ServerHelper.postReview(review, (error, reviews) => {
+              console.log("Refreshing reviews list 😌");
               fillReviewsHTML(reviews);
               IndexedDB.clearWaitingReviews();
             });
@@ -146,7 +146,7 @@ class DBHelper {
    */
   static fetchRestaurantByCuisine(cuisine, callback) {
     // Fetch all restaurants  with proper error handling
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    ServerHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -162,7 +162,7 @@ class DBHelper {
    */
   static fetchRestaurantByNeighborhood(neighborhood, callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    ServerHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -178,7 +178,7 @@ class DBHelper {
    */
   static fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    ServerHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -199,7 +199,7 @@ class DBHelper {
    */
   static fetchNeighborhoods(callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    ServerHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -217,7 +217,7 @@ class DBHelper {
    */
   static fetchCuisines(callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    ServerHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -268,7 +268,7 @@ class DBHelper {
     const marker = new google.maps.Marker({
       position: restaurant.latlng,
       title: restaurant.name,
-      url: DBHelper.urlForRestaurant(restaurant),
+      url: ServerHelper.urlForRestaurant(restaurant),
       map: map,
       animation: google.maps.Animation.DROP
     });
@@ -279,7 +279,7 @@ class DBHelper {
    * Delete review.
    */
   static deleteReview(id) {
-    fetch(DBHelper.DATABASE_URL + 'reviews/' + id, {
+    fetch(ServerHelper.DATABASE_URL + 'reviews/' + id, {
       headers: { 'Accept': 'application/json' },
       method: 'DELETE',
     })
@@ -288,10 +288,10 @@ class DBHelper {
   static deleteAllReviews(reviews) {
     for (let review of reviews) {
       console.log(review.id)
-      DBHelper.deleteReview(review.id);
+      ServerHelper.deleteReview(review.id);
     }
   }
 
 }
 
-export default DBHelper;
+export default ServerHelper;

@@ -1,4 +1,4 @@
-import DBHelper from './dbhelper';
+import ServerHelper from './dbhelper';
 
 var restaurant;
 var reviews;
@@ -37,7 +37,7 @@ window.initMap = () => {
       });
       fillBreadcrumb();
 
-      DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+      ServerHelper.mapMarkerForRestaurant(self.restaurant, self.map);
     }
   });
   fetchRestaurantReviewsFromURL((error, reviews) => {
@@ -59,7 +59,7 @@ const fetchRestaurantFromURL = (callback) => {
   if (!id) { // no id found in URL
     // callback(error, null);
   } else {
-    DBHelper.fetchRestaurantById(id, (error, restaurant) => {
+    ServerHelper.fetchRestaurantById(id, (error, restaurant) => {
       self.restaurant = restaurant;
       if (!restaurant) {
         console.error(error);
@@ -83,7 +83,7 @@ const fetchRestaurantReviewsFromURL = (callback) => {
     // error = 'No restaurant id in URL'
     // callback(error, null);
   } else {
-    DBHelper.fetchReviewsForRestaurant(id, (error, reviews) => {
+    ServerHelper.fetchReviewsForRestaurant(id, (error, reviews) => {
       self.reviews = reviews;
       if (!reviews) {
         console.error(error);
@@ -109,16 +109,16 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   const sourceMobile = document.createElement('source');
   sourceMobile.setAttribute('media', '(max-width: 400px)');
-  sourceMobile.setAttribute('srcset', DBHelper.imageUrlMobileForRestaurant(restaurant));
+  sourceMobile.setAttribute('srcset', ServerHelper.imageUrlMobileForRestaurant(restaurant));
   picture.appendChild(sourceMobile);
 
   const sourceDesk = document.createElement('source');
   sourceDesk.setAttribute('media', '(min-width: 401px)');
-  sourceDesk.setAttribute('srcset', DBHelper.imageUrlForRestaurant(restaurant));
+  sourceDesk.setAttribute('srcset', ServerHelper.imageUrlForRestaurant(restaurant));
   picture.appendChild(sourceDesk);
 
   const image = document.createElement('img');
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.src = ServerHelper.imageUrlForRestaurant(restaurant);
   image.alt = `Restaurant ${restaurant.name}`;
   image.className = 'restaurant-img';
   picture.append(image);
@@ -266,7 +266,7 @@ submit.addEventListener("submit", (e) => {
   } else {
     form.reset();
 
-    DBHelper.postReview(data, (error, reviews) => {
+    ServerHelper.postReview(data, (error, reviews) => {
       self.reviews = reviews;
       if (!reviews) {
         console.error(error);
