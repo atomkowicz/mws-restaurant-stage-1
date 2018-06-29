@@ -40,7 +40,7 @@ window.initMap = () => {
       ServerHelper.mapMarkerForRestaurant(self.restaurant, self.map);
     }
   });
-  
+
   fetchRestaurantReviewsFromURL((error, reviews) => {
     if (error) { // Got an error!
       console.error(error);
@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
   showMap.addEventListener('click', () => {
     document.getElementById('js-show-map').style.display = 'none';
     document.getElementById('map').style.display = 'block';
-  })
+  });
 });
 
 const submit = document.getElementById("js-submit-review");

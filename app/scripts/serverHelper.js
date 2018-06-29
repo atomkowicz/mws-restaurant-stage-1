@@ -2,6 +2,7 @@ import IndexedDB from './db';
 import { fillReviewsHTML } from './restaurant_info';
 
 const PORT = 1337; // Change this to your server port
+export var currentOnlineHandler;
 
 /**
  * Common database helper functions.
@@ -90,6 +91,7 @@ class ServerHelper {
     if (navigator.onLine === false) {
       IndexedDB.getReviews(id)
         .then((stashedReviews) => {
+          console.log(stashedReviews);
           if (stashedReviews) {
             return callback(null, stashedReviews);
           }
@@ -115,7 +117,7 @@ class ServerHelper {
   /**
    * Post a review.
    */
-  static postReview(data, callback) { 
+  static postReview(data, callback) {
 
     fetch(ServerHelper.DATABASE_URL + 'reviews/', {
       headers: { 'Accept': 'application/json' },
@@ -144,29 +146,34 @@ class ServerHelper {
           // We are offline, save review to indexedDB for later
           IndexedDB.saveWaitingReview(data);
           console.log("You're offline! 😱, I'm saving review to indexedDB until connection is restored 😓");
-          window.addEventListener('online', function test(callback) { ServerHelper.updateIndicator(callback) });
+          currentOnlineHandler = () => ServerHelper.updateIndicator(callback);
+          window.addEventListener('online', currentOnlineHandler);
+          console.log("added ", currentOnlineHandler);
+
         }
       });
   }
 
   static updateIndicator(callback) {
+    window.removeEventListener('online', currentOnlineHandler);
+    console.log("removed ", currentOnlineHandler);
     if (navigator.onLine) {
       console.log("😎 You're online again! I'm posting stashed review and clearing db 😊");
 
       IndexedDB.getWaitingReviews().then(reviews => {
         if (reviews.length) {
-          console.log(reviews);
+          IndexedDB.clearWaitingReviews();
           reviews.forEach(review => {
             ServerHelper.postReview(review, (error, reviews) => {
               console.log("Refreshing reviews list...");
+              console.log(reviews);
+              return callback(null, reviews);
             });
           })
-          fillReviewsHTML(reviews);
-          IndexedDB.clearWaitingReviews();
+          
         }
       })
     }
-    window.removeEventListener('online', ServerHelper.updateIndicator);
   }
 
   /**
@@ -318,7 +325,6 @@ class ServerHelper {
       ServerHelper.deleteReview(review.id);
     }
   }
-
 }
 
 export default ServerHelper;

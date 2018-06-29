@@ -8,8 +8,8 @@ const dbPromise = idb.open('restaurants', 1, (upgradeDb) => {
 
       var reviewsStore = upgradeDb.createObjectStore('reviews');
       reviewsStore.createIndex("restaurant_id", "restaurant_id", { unique: false });
-      
-      var waitingStore = upgradeDb.createObjectStore('waiting', {keyPath: 'key', autoIncrement: true});
+
+      var waitingStore = upgradeDb.createObjectStore('waiting', { keyPath: 'key', autoIncrement: true });
   }
 })
 
@@ -42,7 +42,7 @@ class IndexedDB {
   static saveRestaurants(restaurants) {
     return dbPromise.then((db) => {
       const transaction = db.transaction('restaurants', 'readwrite');
-      const store = transaction.objectStore('restaurants');     
+      const store = transaction.objectStore('restaurants');
       restaurants.forEach(restaurant => store.put(restaurant, parseInt(restaurant.id)));
     }).catch(err => {
       console.log('error saving restaurants to database', err)
@@ -52,7 +52,7 @@ class IndexedDB {
   static saveReviews(reviews) {
     return dbPromise.then((db) => {
       const transaction = db.transaction('reviews', 'readwrite');
-      const store = transaction.objectStore('reviews');  
+      const store = transaction.objectStore('reviews');
       reviews.forEach(review => store.put(review, parseInt(review.id)));
     }).catch(err => {
       console.log('error saving reviews to database', err)
@@ -65,7 +65,7 @@ class IndexedDB {
       const transaction = db.transaction('reviews');
       const store = transaction.objectStore('reviews');
       var reviewsIndex = store.index('restaurant_id');
-      return store.getAll(id);
+      return store.getAll(parseInt(id));
     }).catch(err => {
       console.log('error getting review from database', err)
     })
@@ -74,7 +74,7 @@ class IndexedDB {
   static saveWaitingReview(review) {
     return dbPromise.then((db) => {
       const transaction = db.transaction('waiting', 'readwrite');
-      const store = transaction.objectStore('waiting');  
+      const store = transaction.objectStore('waiting');
       store.put(review)
     }).catch(err => {
       console.log('error saving review to database', err)
