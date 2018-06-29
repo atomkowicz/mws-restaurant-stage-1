@@ -133,7 +133,8 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
   }
 
   // fill reviews
-  fillReviewsHTML(restaurant.comments);
+  fillReviewsHTML(self.reviews);
+  self.reviews = null;
 
   // favourite
   fillFavouriteHTML(restaurant.is_favorite);
@@ -164,7 +165,7 @@ const fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hour
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-export const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+export const fillReviewsHTML = (reviews = self.reviews) => {
   const container = document.getElementById('reviews-container');
 
   if (!reviews) {
@@ -174,6 +175,7 @@ export const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     return;
   }
   const ul = document.getElementById('reviews-list');
+  ul.innerHTML = "";
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
@@ -260,6 +262,7 @@ const submit = document.getElementById("js-submit-review");
 if (submit != null)
   submit.addEventListener("submit", (e) => {
     e.preventDefault();
+    e.stopPropagation();
     var form = document.getElementById('js-submit-review');
     var formData = new FormData(form);
 

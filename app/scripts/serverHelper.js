@@ -21,93 +21,101 @@ class ServerHelper {
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
-    var cached = null;
 
-    // check for data cached in database
-    IndexedDB.getRestaurants()
-      .then((cachedRestaurants) => {
-        if (cachedRestaurants.length) {
-          if (!cached) {
-            cached = true;
-            // console.log(cachedRestaurants)
+    // We are offline, get restaurants from IndexedDb
+    if (navigator.onLine === false) {
+      IndexedDB.getRestaurants()
+        .then((cachedRestaurants) => {
+          if (cachedRestaurants.length) {
             return callback(null, cachedRestaurants);
           }
-        }
-      })
+        }).catch((e) => {
+          console.log("Error getting restaurants from IndexedDB", e);
+          callback("Error fetching data from server", null);
+        });
+    }
 
-    // fetch data from network and update in database
-    fetch(ServerHelper.DATABASE_URL + 'restaurants', { headers: { 'Accept': 'application/json' } })
-      .then(response => response.json())
-      .then(restaurants => {
-        IndexedDB.saveRestaurants(restaurants);
-        if (!cached) return callback(null, restaurants);
-      }).catch((e) => {
-        console.log("Error fetching data from server", e);
-      });
+    // We are online, fetch restaurants from network and update in database
+    if (navigator.onLine === true) {
+      fetch(ServerHelper.DATABASE_URL + 'restaurants', { headers: { 'Accept': 'application/json' } })
+        .then(response => response.json())
+        .then(restaurants => {
+          IndexedDB.saveRestaurants(restaurants);
+          return callback(null, restaurants);
+        }).catch((e) => {
+          console.log("Error fetching data from server", e);
+          callback("Error fetching data from server", null);
+        });
+    }
   }
 
   /**
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id, callback) {
-    var cached = null;
 
-    // check for data cached in database
-    IndexedDB.getRestaurants()
-      .then((cachedRestaurants) => {
-        if (cachedRestaurants.length) {
-          if (!cached) {
-            cached = true;
-            var restaurant = cachedRestaurants.find(rest=>rest.id == id);
+    // We are offline, get restaurants from IndexedDb
+    if (navigator.onLine === false) {
+      IndexedDB.getRestaurants()
+        .then((cachedRestaurants) => {
+          if (cachedRestaurants.length) {
+            var restaurant = cachedRestaurants.find(rest => rest.id == id);
             return callback(null, restaurant);
           }
-        }
-      })
+        }).catch((e) => {
+          console.log("Error getting restaurant from IndexedDB", e);
+          callback("Error fetching data from server", null);
+        });
+    }
 
-    fetch(ServerHelper.DATABASE_URL + 'restaurants/' + id, { headers: { 'Accept': 'application/json' } })
-      .then(response => response.json())
-      .then(restaurant => {
-        if (!cached) return callback(null, restaurant);
-      }).catch((e) => {
-        console.log("Error fetching data from server 😢", e);
-        callback("Error fetching data from server", null);
-      });
+    // We are online, fetch restaurant from network and update in database
+    if (navigator.onLine === true) {
+      fetch(ServerHelper.DATABASE_URL + 'restaurants/' + id, { headers: { 'Accept': 'application/json' } })
+        .then(response => response.json())
+        .then(restaurant => {
+          return callback(null, restaurant);
+        }).catch((e) => {
+          console.log("Error fetching data from server 😢", e);
+          callback("Error fetching data from server", null);
+        });
+    }
   }
 
   /**
    * Fetch a restaurant's reviews by its ID.
    */
   static fetchReviewsForRestaurant(id, callback) {
-    var cached = null;
 
-    // check for data cached in database
-    IndexedDB.getReviews(id)
-      .then((stashedReviews) => {
-        if (stashedReviews) {
-          if (!cached) {
-            cached = true;
+    // We are offline, get restaurants from IndexedDb
+    if (navigator.onLine === false) {
+      IndexedDB.getReviews(id)
+        .then((stashedReviews) => {
+          if (stashedReviews) {
             return callback(null, stashedReviews);
           }
-        }
-      })
+        })
+    }
 
-    fetch(ServerHelper.DATABASE_URL + 'reviews/?restaurant_id=' + id, { headers: { 'Accept': 'application/json' } })
-      .then(response => response.json())
-      .then(reviews => {
-        IndexedDB.saveReviews(reviews);
-        if (!cached) return callback(null, reviews);
-        /// DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWSDELETE ALL REVIEWSDELETE ALL REVIEWS
-        //ServerHelper.deleteAllReviews(reviews);
-        /// DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWSDELETE ALL REVIEWSDELETE ALL REVIEWS
-      }).catch((e) => {
-        console.log("Error fetching reviews from server 😢", e);
-      });
+    // We are online, fetch reviews from network and update in database
+    if (navigator.onLine === true) {
+      fetch(ServerHelper.DATABASE_URL + 'reviews/?restaurant_id=' + id, { headers: { 'Accept': 'application/json' } })
+        .then(response => response.json())
+        .then(reviews => {
+          IndexedDB.saveReviews(reviews);
+          return callback(null, reviews);
+          /// DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWSDELETE ALL REVIEWSDELETE ALL REVIEWS
+          //ServerHelper.deleteAllReviews(reviews);
+          /// DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWSDELETE ALL REVIEWSDELETE ALL REVIEWS
+        }).catch((e) => {
+          console.log("Error fetching reviews from server 😢", e);
+        });
+    }
   }
 
   /**
    * Post a review.
    */
-  static postReview(data, callback) {
+  static postReview(data, callback) { 
 
     fetch(ServerHelper.DATABASE_URL + 'reviews/', {
       headers: { 'Accept': 'application/json' },
@@ -145,21 +153,20 @@ class ServerHelper {
     if (navigator.onLine) {
       console.log("😎 You're online again! I'm posting stashed review and clearing db 😊");
 
-      window.removeEventListener('online', ServerHelper.updateIndicator);
-      const waitingReviews = IndexedDB.getWaitingReviews();
-
-      waitingReviews.then(reviews => {
+      IndexedDB.getWaitingReviews().then(reviews => {
         if (reviews.length) {
+          console.log(reviews);
           reviews.forEach(review => {
             ServerHelper.postReview(review, (error, reviews) => {
               console.log("Refreshing reviews list...");
-              fillReviewsHTML(reviews);
-              IndexedDB.clearWaitingReviews();
             });
           })
+          fillReviewsHTML(reviews);
+          IndexedDB.clearWaitingReviews();
         }
       })
     }
+    window.removeEventListener('online', ServerHelper.updateIndicator);
   }
 
   /**
