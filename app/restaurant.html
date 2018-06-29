@@ -102,15 +102,31 @@
       </h1>
       <a class="skip-to" href="#restaurant-container">Skip to details</a>
       <a class="skip-to" href="#map">Skip to map</a>
-      <!-- Beginning breadcrumb -->
-      <ul id="breadcrumb" aria-label="Breadcrumb">
-        <li>
-          <a href="/">Home</a>
-        </li>
-      </ul>
-      <!-- End breadcrumb -->
+      <div class="breadcrumb">
+        <!-- Beginning breadcrumb -->
+        <ul id="breadcrumb" aria-label="Breadcrumb">
+          <li>
+            <a href="/">Home</a>
+          </li>
+        </ul>
+        <!-- End breadcrumb -->
+        <!-- Begin favourite form -->
+        <div class="favourite-container">
+          <form role="form" id="js-submit-favourite">
+            <fieldset class="favourite-fieldset">
+              <legend id="favourite-text" class="favourite-legend">Mark as favourite:</legend>
+              <div class="favourite">
+                <input id="favourite-input" type="checkbox" name="favourite">
+                <label for="favourite-input"></label>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+        <!-- End favourite form -->
+      </div>
     </nav>
     <!-- End nav -->
+
   </header>
   <!-- End header -->
 
@@ -143,6 +159,7 @@
       <div id="map" role="application" tabindex="-1" title="Google Map"></div>
     </section>
     <!-- End map -->
+
     <!-- Beginning restaurant -->
     <section id="restaurant-container">
       <h2 id="restaurant-name"></h2>
@@ -157,7 +174,7 @@
     <!-- end restaurant -->
     <!-- Beginning reviews -->
     <section id="reviews-container">
-        <h3>Reviews</h3>
+      <h3>Reviews</h3>
       <ul id="reviews-list"></ul>
     </section>
     <!-- End reviews -->
@@ -182,13 +199,6 @@
             <label for="rate1" title="Terrible">☆</label>
           </div>
         </fieldset>
-        <!-- <fieldset>
-          <legend>Add to favourites:</legend>
-          <div class="favourite">
-            <input id="favourite-input" type="checkbox" name="favourite">
-            <label for="favourite-input"></label>
-          </div>
-        </fieldset> -->
         <textarea id="comment" name="comments" placeholder="Enter your comment">great restaurant</textarea>
         <input type="text" name="name" placeholder="Aga" value="Aga">
         <input type="submit" value="go">

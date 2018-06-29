@@ -4,9 +4,12 @@ const dbPromise = idb.open('restaurants', 1, (upgradeDb) => {
   switch (upgradeDb.oldVersion) {
     case 0:
       var restaurantsStore = upgradeDb.createObjectStore('restaurants');
+      restaurantsStore.createIndex("id", "id", { unique: true });
+
       var reviewsStore = upgradeDb.createObjectStore('reviews');
-      var waitingStore = upgradeDb.createObjectStore('waiting', {keyPath: 'key', autoIncrement: true});
       reviewsStore.createIndex("restaurant_id", "restaurant_id", { unique: false });
+      
+      var waitingStore = upgradeDb.createObjectStore('waiting', {keyPath: 'key', autoIncrement: true});
   }
 })
 
@@ -23,11 +26,24 @@ class IndexedDB {
     })
   }
 
+  static getRestaurant(id) {
+    return dbPromise.then((db) => {
+      if (!db) return;
+      const transaction = db.transaction('restaurants');
+      const store = transaction.objectStore('restaurants');
+      var restaurantIndex = store.index('id');
+      var d = store.get(id);
+      return store.getAll(id);
+    }).catch(err => {
+      console.log('error getting review from database', err)
+    })
+  }
+
   static saveRestaurants(restaurants) {
     return dbPromise.then((db) => {
       const transaction = db.transaction('restaurants', 'readwrite');
       const store = transaction.objectStore('restaurants');     
-      restaurants.forEach(restaurant => store.put(restaurant, restaurant.id));
+      restaurants.forEach(restaurant => store.put(restaurant, parseInt(restaurant.id)));
     }).catch(err => {
       console.log('error saving restaurants to database', err)
     })

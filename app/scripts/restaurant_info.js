@@ -40,6 +40,7 @@ window.initMap = () => {
       ServerHelper.mapMarkerForRestaurant(self.restaurant, self.map);
     }
   });
+  
   fetchRestaurantReviewsFromURL((error, reviews) => {
     if (error) { // Got an error!
       console.error(error);
@@ -133,6 +134,9 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   // fill reviews
   fillReviewsHTML(restaurant.comments);
+
+  // favourite
+  fillFavouriteHTML(restaurant.is_favorite);
 }
 
 /**
@@ -162,7 +166,7 @@ const fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hour
  */
 export const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
- 
+
   if (!reviews) {
     const noReviews = document.createElement('p');
     noReviews.innerHTML = 'No reviews yet!';
@@ -175,6 +179,15 @@ export const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   });
   container.appendChild(ul);
 }
+
+/**
+ * Create all reviews HTML and add them to the webpage.
+ */
+const fillFavouriteHTML = (isFavourite = self.restaurant.isFavourite) => {
+  const favouriteCheckbox = document.getElementById('favourite-input');
+  favouriteCheckbox.checked = isFavourite;
+}
+
 
 /**
  * Create review HTML and add it to the webpage.
@@ -245,31 +258,31 @@ document.addEventListener('DOMContentLoaded', () => {
 const submit = document.getElementById("js-submit-review");
 
 if (submit != null)
-submit.addEventListener("submit", (e) => {
-  e.preventDefault();
-  var form = document.getElementById('js-submit-review');
-  var formData = new FormData(form);
+  submit.addEventListener("submit", (e) => {
+    e.preventDefault();
+    var form = document.getElementById('js-submit-review');
+    var formData = new FormData(form);
 
-  var data = {};
-  formData.forEach((value, key) => {
-    data[key] = value;
-  });
-
-  const id = getParameterByName('id');
-  data["restaurant_id"] = parseInt(id);
-
-  if (!id) { // no id found in URL
-    let error = 'No restaurant id in URL'
-  } else {
-    form.reset();
-
-    ServerHelper.postReview(data, (error, reviews) => {
-      self.reviews = reviews;
-      if (!reviews) {
-        console.error(error);
-        return;
-      }
-      fillReviewsHTML(reviews);    
+    var data = {};
+    formData.forEach((value, key) => {
+      data[key] = value;
     });
-  }
-});
+
+    const id = getParameterByName('id');
+    data["restaurant_id"] = parseInt(id);
+
+    if (!id) { // no id found in URL
+      let error = 'No restaurant id in URL'
+    } else {
+      form.reset();
+
+      ServerHelper.postReview(data, (error, reviews) => {
+        self.reviews = reviews;
+        if (!reviews) {
+          console.error(error);
+          return;
+        }
+        fillReviewsHTML(reviews);
+      });
+    }
+  });

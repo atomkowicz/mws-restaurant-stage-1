@@ -50,11 +50,24 @@ class ServerHelper {
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id, callback) {
+    var cached = null;
+
+    // check for data cached in database
+    IndexedDB.getRestaurants()
+      .then((cachedRestaurants) => {
+        if (cachedRestaurants.length) {
+          if (!cached) {
+            cached = true;
+            var restaurant = cachedRestaurants.find(rest=>rest.id == id);
+            return callback(null, restaurant);
+          }
+        }
+      })
 
     fetch(ServerHelper.DATABASE_URL + 'restaurants/' + id, { headers: { 'Accept': 'application/json' } })
       .then(response => response.json())
       .then(restaurant => {
-        return callback(null, restaurant);
+        if (!cached) return callback(null, restaurant);
       }).catch((e) => {
         console.log("Error fetching data from server 😢", e);
         callback("Error fetching data from server", null);
@@ -70,7 +83,7 @@ class ServerHelper {
     // check for data cached in database
     IndexedDB.getReviews(id)
       .then((stashedReviews) => {
-        if (stashedReviews.length) {
+        if (stashedReviews) {
           if (!cached) {
             cached = true;
             return callback(null, stashedReviews);

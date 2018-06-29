@@ -12,6 +12,8 @@ var urlsToCache = [
   '/styles/styles.css',
   '/scripts/main.js',
   '/scripts/restaurant_info.js',
+  '/scripts/serverHelper.js',
+  '/scripts/db.js',
   'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700',
 ];
 
@@ -78,6 +80,10 @@ self.addEventListener('fetch', function (event) {
     }
     if (requestUrl.pathname.startsWith('/js/main.js')) {
       event.respondWith(caches.match('/js/main.js'));
+      return;
+    }
+    if (requestUrl.pathname.startsWith('/js/restaurant_info.js')) {
+      event.respondWith(caches.match('/js/restaurant_info.js'));
       return;
     }
     if (requestUrl.pathname.startsWith('/data/restaurants.json')) {
