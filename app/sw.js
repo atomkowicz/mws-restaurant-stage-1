@@ -12,9 +12,8 @@ var urlsToCache = [
   '/styles/styles.css',
   '/scripts/main.js',
   '/scripts/restaurant_info.js',
-  '/scripts/serverHelper.js',
-  '/scripts/IndexedDB.js',
-  'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700',
+  // '/scripts/serverHelper.js',
+  // '/scripts/IndexedDB.js',
 ];
 
 // Images are not put into cache instantly. 
