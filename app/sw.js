@@ -13,7 +13,7 @@ var urlsToCache = [
   '/scripts/main.js',
   '/scripts/restaurant_info.js',
   '/scripts/serverHelper.js',
-  '/scripts/db.js',
+  '/scripts/IndexedDB.js',
   'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700',
 ];
 

@@ -1,4 +1,4 @@
-import IndexedDB from './db';
+import IndexedDB from './IndexedDB';
 import { fillReviewsHTML } from './restaurant_info';
 
 const PORT = 1337; // Change this to your server port
@@ -105,9 +105,6 @@ class ServerHelper {
         .then(reviews => {
           IndexedDB.saveReviews(reviews);
           return callback(null, reviews);
-          /// DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWSDELETE ALL REVIEWSDELETE ALL REVIEWS
-          //ServerHelper.deleteAllReviews(reviews);
-          /// DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWS DELETE ALL REVIEWSDELETE ALL REVIEWSDELETE ALL REVIEWS
         }).catch((e) => {
           console.log("Error fetching reviews from server 😢", e);
         });
@@ -154,6 +151,25 @@ class ServerHelper {
       });
   }
 
+  /**
+   * Mark restaurant as favourite.
+   */
+  static markAsFavourite(id, isFavourite) {
+
+    const favourite = isFavourite ? "true" : "false";
+
+    fetch(ServerHelper.DATABASE_URL + 'restaurants/' + id + '/?is_favorite=' + favourite, {
+      headers: { 'Accept': 'application/json' },
+      method: 'PUT',
+    })
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((e) => {
+        console.log("Error, review was not updated: " + e);
+      })
+  }
+
   static updateIndicator(callback) {
     window.removeEventListener('online', currentOnlineHandler);
     console.log("removed ", currentOnlineHandler);
@@ -170,7 +186,7 @@ class ServerHelper {
               return callback(null, reviews);
             });
           })
-          
+
         }
       })
     }
@@ -308,22 +324,6 @@ class ServerHelper {
       animation: google.maps.Animation.DROP
     });
     return marker;
-  }
-
-  /**
-   * Delete review.
-   */
-  static deleteReview(id) {
-    fetch(ServerHelper.DATABASE_URL + 'reviews/' + id, {
-      headers: { 'Accept': 'application/json' },
-      method: 'DELETE',
-    })
-  }
-
-  static deleteAllReviews(reviews) {
-    for (let review of reviews) {
-      ServerHelper.deleteReview(review.id);
-    }
   }
 }
 

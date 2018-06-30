@@ -67,6 +67,9 @@ const fetchRestaurantFromURL = (callback) => {
         return;
       }
       fillRestaurantHTML();
+      fillFavouriteHTML();
+      console.log(restaurant)
+
       callback(null, restaurant)
     });
   }
@@ -135,9 +138,6 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
   // fill reviews
   fillReviewsHTML(self.reviews);
   self.reviews = null;
-
-  // favourite
-  fillFavouriteHTML(restaurant.is_favorite);
 }
 
 /**
@@ -185,9 +185,10 @@ export const fillReviewsHTML = (reviews = self.reviews) => {
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-const fillFavouriteHTML = (isFavourite = self.restaurant.isFavourite) => {
+const fillFavouriteHTML = (restaurant = self.restaurant) => {
   const favouriteCheckbox = document.getElementById('favourite-input');
-  favouriteCheckbox.checked = isFavourite;
+  console.log(restaurant.is_favorite);
+  favouriteCheckbox.checked = restaurant.is_favorite;
 }
 
 
@@ -289,3 +290,17 @@ if (submit != null)
       });
     }
   });
+
+
+const favouriteCheckbox = document.getElementById("favourite-input");
+if (favouriteCheckbox != null) {
+  favouriteCheckbox.addEventListener('change', function () {
+
+    const id = getParameterByName('id');
+    if (!id) {
+      console.log("no id found in url");
+    } else {
+      ServerHelper.markAsFavourite(id, this.checked);
+    }
+  });
+}
