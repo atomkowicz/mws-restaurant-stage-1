@@ -91,7 +91,6 @@ class ServerHelper {
     if (navigator.onLine === false) {
       IndexedDB.getReviews(id)
         .then((stashedReviews) => {
-          console.log(stashedReviews);
           if (stashedReviews) {
             return callback(null, stashedReviews);
           }
@@ -145,8 +144,6 @@ class ServerHelper {
           console.log("You're offline! 😱, I'm saving review to indexedDB until connection is restored 😓");
           currentOnlineHandler = () => ServerHelper.updateIndicator(callback);
           window.addEventListener('online', currentOnlineHandler);
-          console.log("added ", currentOnlineHandler);
-
         }
       });
   }
@@ -182,7 +179,6 @@ class ServerHelper {
           reviews.forEach(review => {
             ServerHelper.postReview(review, (error, reviews) => {
               console.log("Refreshing reviews list...");
-              console.log(reviews);
               return callback(null, reviews);
             });
           })

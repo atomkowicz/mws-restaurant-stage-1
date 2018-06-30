@@ -68,8 +68,6 @@ const fetchRestaurantFromURL = (callback) => {
       }
       fillRestaurantHTML();
       fillFavouriteHTML();
-      console.log(restaurant)
-
       callback(null, restaurant)
     });
   }
@@ -187,7 +185,6 @@ export const fillReviewsHTML = (reviews = self.reviews) => {
  */
 const fillFavouriteHTML = (restaurant = self.restaurant) => {
   const favouriteCheckbox = document.getElementById('favourite-input');
-  console.log(restaurant.is_favorite);
   favouriteCheckbox.checked = restaurant.is_favorite;
 }
 

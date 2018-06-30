@@ -33,7 +33,7 @@ class IndexedDB {
       const store = transaction.objectStore('restaurants');
       var restaurantIndex = store.index('id');
       var d = store.get(id);
-      return store.getAll(id);
+      return store.get(id);
     }).catch(err => {
       console.log('error getting review from database', err)
     })
@@ -65,10 +65,13 @@ class IndexedDB {
       const transaction = db.transaction('reviews');
       const store = transaction.objectStore('reviews');
       var reviewsIndex = store.index('restaurant_id');
-      return store.getAll(parseInt(id));
-    }).catch(err => {
-      console.log('error getting review from database', err)
+      return store.getAll();
+    }).then(reviews => {
+      return reviews.filter(r => r.restaurant_id == id)
     })
+      .catch(err => {
+        console.log('error getting reviews from database', err)
+      })
   }
 
   static saveWaitingReview(review) {
